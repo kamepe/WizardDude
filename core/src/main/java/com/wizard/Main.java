@@ -13,13 +13,11 @@ import com.wizard.input.InputManager;
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
-    InputManager inputManager;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
-        inputManager = new InputManager();
     }
 
     @Override
