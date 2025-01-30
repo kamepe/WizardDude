@@ -7,17 +7,20 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.wizard.game.WizardGame;
 import com.wizard.input.InputManager;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
+    private WizardGame wizardGame;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
+        wizardGame = new WizardGame();
     }
 
     @Override
