@@ -1,4 +1,4 @@
-package com.wizard.input;
+package com.wizard.listeners;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
