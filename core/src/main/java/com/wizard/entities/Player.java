@@ -24,12 +24,11 @@ public class Player {
 
     public Player(World world, float x, float y) {
         this.world = world;
-        texture = new Texture("characters/tempPlayer.png");// need to actually add a texture\
+        texture = new Texture("characters/tempPlayer.png");// need to actually add a texture
         position = new Vector2();
-        float sizeAdjustment = 0.1f;
+        float sizeAdjustment = 0.1f; // remove when the correct sprite is added
         width = (texture.getWidth() / Constants.PPM) * sizeAdjustment;
         height = (texture.getHeight() / Constants.PPM) * sizeAdjustment;
-
         createBody(x, y);
     }
 
@@ -38,7 +37,6 @@ public class Player {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
         bodyDef.fixedRotation = true; // Prevent the player from rotating
-
         // Create the body
         body = world.createBody(bodyDef);
 
@@ -57,6 +55,7 @@ public class Player {
     }
 
     public void update(float deltaTime){
+        position = body.getPosition();
         handleMovement(deltaTime);
     }
 
@@ -69,9 +68,11 @@ public class Player {
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
             currentDirection = Constants.Direction.LEFT;
+            System.out.println("LEFT");
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction.x = Constants.MAX_SPEED;
             currentDirection = Constants.Direction.RIGHT;
+            System.out.println("RIGHT");
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
