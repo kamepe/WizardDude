@@ -19,14 +19,17 @@ public class GameScreen extends ScreenAdapter {
     private Main game;
     private OrthographicCamera camera;
     private SpriteBatch batch;
-    // World is needed within the Box2D library
+
     private World world;
+    private static final float PPM = 100; // neeeeds to go into the const class, for now using for testing
+
     private BitmapFont font;
     //objects
     private Player player;
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
+
 
     public GameScreen(Main game){
         this.game = game;
@@ -40,11 +43,19 @@ public class GameScreen extends ScreenAdapter {
         tiledMap = new TmxMapLoader().load("maps/testMap.tmx");
 
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        player = new Player(Gdx.graphics.getWidth() / 2 / PPM, Gdx.graphics.getHeight() / 2 / PPM);
     }
     public void update(float delta){
-//        util.update(delta, camera);
-//        timer.update(delta);
-//        world.step(1/30f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames also dont know is the positioniterations are important
+        player.update(delta);
+
+        // Center camera on player
+        camera.position.x = player.getCenterX();
+        camera.position.y = player.getCenterY();
+
+        camera.update();
+
+        world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
     }
 
     public void render(float delta){
@@ -58,10 +69,19 @@ public class GameScreen extends ScreenAdapter {
         // Render map
         renderer.setView(camera);
         renderer.render();
+
+        // Render player
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        player.render(batch);
+        batch.end();
     }
 
     public void resize(int width, int height){
         camera.setToOrtho(false, width/2, height/2); // Check if a better way to do this
+
+//        camera.viewportWidth = VIEWPORT_WIDTH;
+//        camera.viewportHeight = VIEWPORT_HEIGHT * height / width;
         camera.update();
     }
 
@@ -76,6 +96,8 @@ public class GameScreen extends ScreenAdapter {
     public void dispose(){
         tiledMap.dispose();
         renderer.dispose();
+        player.dispose();
+        world.dispose();
     }
 
 }
