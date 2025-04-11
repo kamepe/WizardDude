@@ -12,7 +12,6 @@ import com.wizard.utils.Constants;
 public class Player {
     private Body body;
     private World world;
-
     private Texture texture;
     private Vector2 position;
     private Vector2 velocity; // Not sure if needed
@@ -36,7 +35,7 @@ public class Player {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
-        bodyDef.fixedRotation = true; // Prevent the player from rotating
+        bodyDef.fixedRotation = true; // not sure if actually needed, since didnt turn when i changed it
         // Create the body
         body = world.createBody(bodyDef);
 
@@ -62,9 +61,8 @@ public class Player {
     private void handleMovement(float deltaTime){
         velocity = body.getLinearVelocity();
         Vector2 direction = new Vector2(0, 0);
-//        enum state = getDirection();
-//
-//        switch(state)
+
+        // make these into switch cases and make diagonal movement divide by sqrt2 so not faster
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
             currentDirection = Constants.Direction.LEFT;
@@ -86,10 +84,6 @@ public class Player {
         body.setLinearVelocity(direction);
     }
 
-    private void getDirection(){
-
-    }
-
     public void render(SpriteBatch batch) {
         Vector2 position = body.getPosition();
 
@@ -104,30 +98,18 @@ public class Player {
         texture.dispose();
     }
 
-    // Getters for camera following
-    public float getX() {
-        return position.x;
-    }
+    // Getters for future use like collisions
+    public float getX() {return position.x;}
 
-    public float getY() {
-        return position.y;
-    }
+    public float getY() {return position.y;}
 
-    public float getCenterX() {
-        return position.x + width / 2;
-    }
+    public float getCenterX() {return position.x + width / 2;}
 
-    public float getCenterY() {
-        return position.y + height / 2;
-    }
+    public float getCenterY() {return position.y + height / 2;}
 
-    public float getHeight() {
-        return height;
-    }
-    public float getWidth() {
-        return width;
-    }
-    public Vector2 getPosition() {
-        return position;
-    }
+    public float getHeight() {return height;}
+
+    public float getWidth() {return width;} // make sure updated if fore some reason it changes
+
+    public Vector2 getPosition() {return position;}
 }

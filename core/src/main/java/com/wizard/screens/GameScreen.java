@@ -27,7 +27,6 @@ public class GameScreen extends ScreenAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch batch;
-    private Box2DDebugRenderer debugRenderer;
     private World world;
     private static final float PPM = 100; // neeeeds to go into the const class, for now using for testing
 
@@ -42,7 +41,6 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(Main game){
         this.game = game;
         this.world = new World(new Vector2(0, 0), true);
-        this.debugRenderer = new Box2DDebugRenderer();// remove when done
         this.batch = game.getBatch();
         // Tile map
         TmxMapLoader tmxMapLoader = new TmxMapLoader();
@@ -93,7 +91,6 @@ public class GameScreen extends ScreenAdapter {
         // Render map
         renderer.setView(camera);
         renderer.render();
-
         updateCamera();
 
         // Render player
@@ -102,12 +99,10 @@ public class GameScreen extends ScreenAdapter {
         player.render(batch);
         batch.end();
 
-        debugRenderer.render(world, camera.combined.cpy().scl(PPM));// not working right now
-    }
+        }
 
     public void resize(int width, int height){
-//        camera.setToOrtho(false, width, height); // Check if a better way to do this
-//        viewport.update(width, height);
+//        camera.setToOrtho(false, width, height);
         camera.update();
     }
 
@@ -124,7 +119,6 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
         player.dispose();
         world.dispose();
-        debugRenderer.dispose();
     }
 
 }
