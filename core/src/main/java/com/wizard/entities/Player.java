@@ -30,7 +30,7 @@ public class Player {
 
     public Player(World world, float x, float y) {
         this.world = world;
-        texture = new Texture(Gdx.files.internal("characters/tempPlayer3.png"));
+        texture = new Texture(Gdx.files.internal("characters/tempPlayer2.png"));
         sprite = new Sprite(texture);// need to actually add a texture
         position = new Vector2();
         width = (sprite.getWidth() / PPM);
