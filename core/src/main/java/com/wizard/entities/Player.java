@@ -30,11 +30,12 @@ public class Player {
 
     public Player(World world, float x, float y) {
         this.world = world;
-        texture = new Texture(Gdx.files.internal("characters/tempPlayer3.png"));
+        texture = new Texture(Gdx.files.internal("characters/tempPlayer.png"));
         sprite = new Sprite(texture);// need to actually add a texture
         position = new Vector2();
-        width = (sprite.getWidth() / PPM);
-        height = (sprite.getHeight() / PPM);
+        width = (sprite.getWidth() / PPM) / 10;
+        height = (sprite.getHeight() / PPM) / 10;
+//        sprite.scale(0.1f);
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
     }
 

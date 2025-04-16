@@ -1,6 +1,5 @@
 package com.wizard.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -16,11 +15,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Player;
-import com.wizard.game.WizardGame;
+import com.wizard.utils.Constants;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -28,7 +26,6 @@ public class GameScreen extends ScreenAdapter {
     private Viewport viewport;
     private SpriteBatch batch;
     private World world;
-    private static final float PPM = 100; // neeeeds to go into the const class, for now using for testing
 
     private BitmapFont font;
     //objects
@@ -50,7 +47,7 @@ public class GameScreen extends ScreenAdapter {
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        player = new Player(world,Gdx.graphics.getWidth() / 2 / PPM, Gdx.graphics.getHeight() / 2 / PPM);
+        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM);
         // Set initial camera position
         camera.position.set(
             player.getX(),
@@ -69,8 +66,8 @@ public class GameScreen extends ScreenAdapter {
 
     private void updateCamera() {
         Vector3 position = camera.position;
-        position.x = player.getX() * PPM;
-        position.y = player.getY() * PPM;
+        position.x = player.getX() * Constants.PPM;
+        position.y = player.getY() * Constants.PPM;
 
         camera.position.set(position);
         camera.update();
