@@ -2,17 +2,24 @@ package com.wizard.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.wizard.utils.Constants;
+
+import static com.wizard.utils.Constants.PPM;
 
 //InderStuff
 public class Player {
     private Body body;
     private World world;
     private Texture texture;
+    private Sprite sprite;
+    private TextureRegion animation;
     private Vector2 position;
     private Vector2 velocity; // Not sure if needed
 
@@ -23,12 +30,12 @@ public class Player {
 
     public Player(World world, float x, float y) {
         this.world = world;
-        texture = new Texture("characters/tempPlayer.png");// need to actually add a texture
+        texture = new Texture(Gdx.files.internal("characters/tempPlayer3.png"));
+        sprite = new Sprite(texture);// need to actually add a texture
         position = new Vector2();
-        float sizeAdjustment = 0.1f; // remove when the correct sprite is added
-        width = (texture.getWidth() / Constants.PPM) * sizeAdjustment;
-        height = (texture.getHeight() / Constants.PPM) * sizeAdjustment;
-        createBody(x, y);
+        width = (sprite.getWidth() / PPM);
+        height = (sprite.getHeight() / PPM);
+        createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
     }
 
     private void createBody(float x, float y) {
@@ -41,12 +48,12 @@ public class Player {
 
         //create fixture, collision shape
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
+        shape.setAsBox(width, height);
 
         // Create fixture definition
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = 1.0f; // probably not needed
 
         body.createFixture(fixtureDef);
 
@@ -72,7 +79,6 @@ public class Player {
             currentDirection = Constants.Direction.RIGHT;
             System.out.println("RIGHT");
         }
-
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction.y = Constants.MAX_SPEED;
             currentDirection = Constants.Direction.UP;
@@ -85,13 +91,13 @@ public class Player {
     }
 
     public void render(SpriteBatch batch) {
-        Vector2 position = body.getPosition();
+        position = body.getPosition();
 
         // Draw centered at physics body position
-        batch.draw(texture,
-            (position.x - width/2) * Constants.PPM,
-            (position.y - height/2) * Constants.PPM,
-            width * Constants.PPM, height * Constants.PPM);
+        batch.draw(sprite,
+            (position.x - width/2) * PPM,
+            (position.y - height/2) * PPM,
+            width * PPM, height * PPM);
     }
 
     public void dispose() {
@@ -102,10 +108,6 @@ public class Player {
     public float getX() {return position.x;}
 
     public float getY() {return position.y;}
-
-    public float getCenterX() {return position.x + width / 2;}
-
-    public float getCenterY() {return position.y + height / 2;}
 
     public float getHeight() {return height;}
 

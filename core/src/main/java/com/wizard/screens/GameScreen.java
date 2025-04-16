@@ -45,18 +45,16 @@ public class GameScreen extends ScreenAdapter {
         // Tile map
         TmxMapLoader tmxMapLoader = new TmxMapLoader();
         tiledMap = new TmxMapLoader().load("maps/testMap.tmx");
-        renderer = new OrthogonalTiledMapRenderer(tiledMap);
+        renderer = new OrthogonalTiledMapRenderer(tiledMap, 1);
 
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
-//        this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        viewport = new FitViewport(Gdx.graphics.getWidth() * 1.3f,  Gdx.graphics.getHeight() * 1.3f, camera);
-        viewport.apply();
+        this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        player = new Player(world,Gdx.graphics.getWidth() / 2 / PPM , Gdx.graphics.getHeight() / 2/ PPM);
+        player = new Player(world,Gdx.graphics.getWidth() / 2 / PPM, Gdx.graphics.getHeight() / 2 / PPM);
         // Set initial camera position
         camera.position.set(
-            player.getCenterX(),
-            player.getCenterY(),
+            player.getX(),
+            player.getY(),
             0
         );
         camera.update();
@@ -65,14 +63,14 @@ public class GameScreen extends ScreenAdapter {
     public void update(float delta){
         world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
 
-        camera.update();
+        camera.update(); // these need to be after the world step
         player.update(delta);
     }
 
     private void updateCamera() {
         Vector3 position = camera.position;
-        position.x = player.getCenterX() * PPM;
-        position.y = player.getCenterY() * PPM;
+        position.x = player.getX() * PPM;
+        position.y = player.getY() * PPM;
 
         camera.position.set(position);
         camera.update();
@@ -86,12 +84,11 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Update camera
-        camera.update();
+        updateCamera();
 
         // Render map
         renderer.setView(camera);
         renderer.render();
-        updateCamera();
 
         // Render player
         batch.setProjectionMatrix(camera.combined);
@@ -102,7 +99,6 @@ public class GameScreen extends ScreenAdapter {
         }
 
     public void resize(int width, int height){
-//        camera.setToOrtho(false, width, height);
         camera.update();
     }
 
