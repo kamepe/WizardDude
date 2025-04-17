@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
 
 import static com.wizard.utils.Constants.PPM;
@@ -27,6 +28,7 @@ public class Player {
     private float height;
     private Constants.Direction currentDirection;
 
+    private Animator animator;
 
     public Player(World world, float x, float y) {
         this.world = world;
@@ -35,8 +37,9 @@ public class Player {
         position = new Vector2();
         width = (sprite.getWidth() / PPM) / 10;
         height = (sprite.getHeight() / PPM) / 10;
-//        sprite.scale(0.1f);
-        createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
+        createBody(x, y);
+
+        animator = new Animator(this, body, "characters/idleSoldier.png");
     }
 
     private void createBody(float x, float y) {
@@ -64,6 +67,7 @@ public class Player {
     public void update(float deltaTime){
         position = body.getPosition();
         handleMovement(deltaTime);
+        animator.update(deltaTime);
     }
 
     private void handleMovement(float deltaTime){
@@ -74,11 +78,11 @@ public class Player {
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
             currentDirection = Constants.Direction.LEFT;
-            System.out.println("LEFT");
+//            System.out.println("LEFT");
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction.x = Constants.MAX_SPEED;
             currentDirection = Constants.Direction.RIGHT;
-            System.out.println("RIGHT");
+//            System.out.println("RIGHT");
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction.y = Constants.MAX_SPEED;
@@ -95,10 +99,16 @@ public class Player {
         position = body.getPosition();
 
         // Draw centered at physics body position
-        batch.draw(sprite,
-            (position.x - width/2) * PPM,
-            (position.y - height/2) * PPM,
-            width * PPM, height * PPM);
+
+        if (true) {
+            animator.render(batch);
+        } else {
+            // Fallback to sprite rendering
+            batch.draw(sprite,
+                (position.x - width/2) * PPM,
+                (position.y - height/2) * PPM,
+                width * PPM, height * PPM);
+        }
     }
 
     public void dispose() {
@@ -112,7 +122,7 @@ public class Player {
 
     public float getHeight() {return height;}
 
-    public float getWidth() {return width;} // make sure updated if fore some reason it changes
+    public float getWidth() {return width;} // make sure updated if for some reason it changes
 
-    public Vector2 getPosition() {return position;}
+    public Vector2 getPosition() {return body.getPosition();}
 }
