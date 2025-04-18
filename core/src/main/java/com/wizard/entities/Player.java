@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
 
@@ -22,7 +23,7 @@ public class Player {
     private World world;
     private Texture texture;
     private Sprite sprite;
-    private TextureRegion animation;
+    private Animator animation;
     private Vector2 position;
     private Texture fireballTexture;
     private Sprite fireballSprite;
@@ -46,6 +47,8 @@ public class Player {
         width = (sprite.getWidth() / (PPM * 10));
         height = (sprite.getHeight() / (PPM * 10));
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
+
+        animation = new Animator(this, body, "characters/idleSoldier.png");
     }
 
     private void createBody(float x, float y) {
@@ -73,6 +76,7 @@ public class Player {
     public void update(float deltaTime){
         position = body.getPosition();
         handleMovement(deltaTime);
+        animation.update(deltaTime);
         handleSpellCast(deltaTime);
     }
 
@@ -101,7 +105,7 @@ public class Player {
         body.setLinearVelocity(direction);
     }
     private void handleSpellCast(float deltaTime){
-        
+
         Sprite fireball = new Sprite(fireballSprite);
         Vector2 direction = new Vector2(0, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.O) ) {
@@ -110,13 +114,13 @@ public class Player {
             float startX = position.x;
             float startY = position.y;
             Vector2 rawDir = new Vector2(body.getLinearVelocity());
-            if (rawDir.len() == 0) rawDir.set(1,0);  // default to “right” if you weren’t moving  
-            rawDir.nor();  
+            if (rawDir.len() == 0) rawDir.set(1,0);  // default to “right” if you weren’t moving
+            rawDir.nor();
 
             float width = 0.2f, height = 0.2f, speed = 5f;
 
 
-            entityManager.addToActiveSpells(new Spells(world, startX, 
+            entityManager.addToActiveSpells(new Spells(world, startX,
             startY, rawDir.x, rawDir.y, width, height, speed, fireball ));
         }
     }
@@ -124,10 +128,16 @@ public class Player {
         position = body.getPosition();
 
         // Draw centered at physics body position
-        batch.draw(sprite,
-            (position.x - width/2) * PPM,
-            (position.y - height/2) * PPM,
-            width * PPM, height * PPM);
+        if(true){
+            animation.render(batch);
+        }
+        else{
+            batch.draw(sprite,
+                (position.x - width/2) * PPM,
+                (position.y - height/2) * PPM,
+                width * PPM, height * PPM);
+        }
+
     }
 
     public void dispose() {

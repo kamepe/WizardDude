@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.wizard.entities.Player;
 
 public class Animator {
+
     private TextureRegion[] frames;
     private Player player;
     private Body body;
