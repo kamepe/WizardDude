@@ -23,7 +23,6 @@ public class EntityManager {
     }
     // Function to iterate over all active spells and update them all 
     public void updateAll(float delta){
-        batch.begin();
         Iterator<Spells> iterator = spells.iterator();
         while(iterator.hasNext()){
             Spells spell = iterator.next();
@@ -33,9 +32,12 @@ public class EntityManager {
                  world.destroyBody(spell.getBody());
                  iterator.remove();
             }
-            spell.render(batch);
         }
-        batch.end();
     }
 
+    public void renderAll() {
+    for (Spells spell : spells) {
+            spell.render(batch);
+             }
+    }
 }

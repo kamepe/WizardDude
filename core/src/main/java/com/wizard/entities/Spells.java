@@ -17,7 +17,7 @@ public class Spells {
     private Sprite  sprite;
     private float aliveTime = 0.f;
     private boolean destroyed = false;
-    private static int maxTime = 3;
+    private static float maxTime = 3.0f;
     /**
      * @param world     your Box2D world
      * @param startX    spawn X in meters
@@ -49,7 +49,7 @@ public class Spells {
         body.setLinearVelocity(velocity);
 
         this.sprite = spellSprite;
-        this.sprite.setSize(width * PPM, height * PPM);
+        this.sprite.setSize(width , height );
 
     }
     public void update(float delta){

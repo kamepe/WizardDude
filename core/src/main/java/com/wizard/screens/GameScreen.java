@@ -91,6 +91,7 @@ public class GameScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         player.render(batch);
+        entityManager.renderAll();
         batch.end();
 
         }
