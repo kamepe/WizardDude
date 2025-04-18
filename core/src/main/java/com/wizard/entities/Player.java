@@ -2,44 +2,50 @@ package com.wizard.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.wizard.utils.Animator;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Constants;
-
 import static com.wizard.utils.Constants.PPM;
 
 //InderStuff
 public class Player {
     private Body body;
+    private Spells spells;
     private World world;
     private Texture texture;
     private Sprite sprite;
     private TextureRegion animation;
     private Vector2 position;
+    private Texture fireballTexture;
+    private Sprite fireballSprite;
     private Vector2 velocity; // Not sure if needed
+    private EntityManager entityManager;
 
     private float width;
     private float height;
     private Constants.Direction currentDirection;
 
-    private Animator animator;
 
-    public Player(World world, float x, float y) {
+    public Player(World world, float x, float y, EntityManager em) {
         this.world = world;
-        texture = new Texture(Gdx.files.internal("characters/tempPlayer.png"));
+        this.entityManager = em;
+        texture = new Texture(Gdx.files.internal("characters/tempPlayer2.png"));
         sprite = new Sprite(texture);// need to actually add a texture
+        fireballTexture = new Texture(Gdx.files.internal("characters/tempPlayer.png"));
+        fireballSprite = new Sprite(fireballTexture);
         position = new Vector2();
-        width = (sprite.getWidth() / PPM) / 10;
-        height = (sprite.getHeight() / PPM) / 10;
-        createBody(x, y);
-
-        animator = new Animator(this, body, "characters/idleSoldier.png");
+        position = new Vector2();
+        width = (sprite.getWidth() / (PPM * 10));
+        height = (sprite.getHeight() / (PPM * 10));
+        createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
     }
 
     private void createBody(float x, float y) {
@@ -67,7 +73,7 @@ public class Player {
     public void update(float deltaTime){
         position = body.getPosition();
         handleMovement(deltaTime);
-        animator.update(deltaTime);
+        handleSpellCast(deltaTime);
     }
 
     private void handleMovement(float deltaTime){
@@ -78,11 +84,11 @@ public class Player {
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
             currentDirection = Constants.Direction.LEFT;
-//            System.out.println("LEFT");
+            System.out.println("LEFT");
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction.x = Constants.MAX_SPEED;
             currentDirection = Constants.Direction.RIGHT;
-//            System.out.println("RIGHT");
+            System.out.println("RIGHT");
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction.y = Constants.MAX_SPEED;
@@ -94,21 +100,34 @@ public class Player {
 
         body.setLinearVelocity(direction);
     }
+    private void handleSpellCast(float deltaTime){
+        
+        Sprite fireball = new Sprite(fireballSprite);
+        Vector2 direction = new Vector2(0, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.O) ) {
+        // Get all the variables to initialise a spell
+            position = body.getPosition();
+            float startX = position.x;
+            float startY = position.y;
+            Vector2 rawDir = new Vector2(body.getLinearVelocity());
+            if (rawDir.len() == 0) rawDir.set(1,0);  // default to “right” if you weren’t moving  
+            rawDir.nor();  
 
+            float width = 0.2f, height = 0.2f, speed = 5f;
+
+
+            entityManager.addToActiveSpells(new Spells(world, startX, 
+            startY, rawDir.x, rawDir.y, width, height, speed, fireball ));
+        }
+    }
     public void render(SpriteBatch batch) {
         position = body.getPosition();
 
         // Draw centered at physics body position
-
-        if (true) {
-            animator.render(batch);
-        } else {
-            // Fallback to sprite rendering
-            batch.draw(sprite,
-                (position.x - width/2) * PPM,
-                (position.y - height/2) * PPM,
-                width * PPM, height * PPM);
-        }
+        batch.draw(sprite,
+            (position.x - width/2) * PPM,
+            (position.y - height/2) * PPM,
+            width * PPM, height * PPM);
     }
 
     public void dispose() {
@@ -122,7 +141,7 @@ public class Player {
 
     public float getHeight() {return height;}
 
-    public float getWidth() {return width;} // make sure updated if for some reason it changes
+    public float getWidth() {return width;} // make sure updated if fore some reason it changes
 
-    public Vector2 getPosition() {return body.getPosition();}
+    public Vector2 getPosition() {return position;}
 }

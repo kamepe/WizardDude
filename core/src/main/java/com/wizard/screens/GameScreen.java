@@ -2,21 +2,19 @@ package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
+import com.wizard.entities.EntityManager;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
 
@@ -30,6 +28,7 @@ public class GameScreen extends ScreenAdapter {
     private BitmapFont font;
     //objects
     private Player player;
+    private EntityManager entityManager;
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
@@ -40,14 +39,14 @@ public class GameScreen extends ScreenAdapter {
         this.world = new World(new Vector2(0, 0), true);
         this.batch = game.getBatch();
         // Tile map
-        TmxMapLoader tmxMapLoader = new TmxMapLoader();
+       this.entityManager = new EntityManager(world, batch);
         tiledMap = new TmxMapLoader().load("maps/testMap.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap, 1);
 
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM);
+        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager );
         // Set initial camera position
         camera.position.set(
             player.getX(),
@@ -62,6 +61,7 @@ public class GameScreen extends ScreenAdapter {
 
         camera.update(); // these need to be after the world step
         player.update(delta);
+        entityManager.updateAll(delta);
     }
 
     private void updateCamera() {
