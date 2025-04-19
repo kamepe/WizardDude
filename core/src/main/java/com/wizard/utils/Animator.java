@@ -25,8 +25,8 @@ public class Animator {
         duration = 0.0f;
         current = 0;
         Texture texture = new Texture(Gdx.files.internal(path));
-        frames = TextureRegion.split(texture, 100, 100)[0];
-        delay = 0.2f;
+        frames = TextureRegion.split(texture, 32, 32)[0];
+        delay = 0.1f;
 
         width = frames[0].getRegionWidth();
         height = frames[0].getRegionHeight();

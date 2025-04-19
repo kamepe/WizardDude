@@ -48,7 +48,7 @@ public class Player {
         height = (sprite.getHeight() / (PPM * 10));
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
 
-        animation = new Animator(this, body, "characters/idleSoldier.png");
+        animation = new Animator(this, body, "characters/walkingRight.png");
     }
 
     private void createBody(float x, float y) {
