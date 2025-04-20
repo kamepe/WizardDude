@@ -126,10 +126,6 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            Vector2 rawDir = new Vector2(body.getLinearVelocity());
-            if (rawDir.len() == 0) rawDir.set(1,0);  // default to “right” if you weren’t moving
-            rawDir.nor();
-
             float width = 0.2f, height = 0.2f, speed = 5f;
 
 
