@@ -2,11 +2,12 @@ package com.wizard.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -14,7 +15,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
-
 import static com.wizard.utils.Constants.PLAYER_DIMENSIONS;
 import static com.wizard.utils.Constants.PPM;
 
@@ -31,15 +31,17 @@ public class Player {
     private Sprite fireballSprite;
     private Vector2 velocity; // Not sure if needed
     private EntityManager entityManager;
+    private OrthographicCamera camera;
 
     private float width;
     private float height;
     private Constants.Direction currentDirection;
 
 
-    public Player(World world, float x, float y, EntityManager em) {
+    public Player(World world, float x, float y, EntityManager em, OrthographicCamera cam) {
         this.world = world;
         this.entityManager = em;
+        this.camera = cam;
         texture = new Texture(Gdx.files.internal("characters/walkingRight.png"));
         sprite = new Sprite(texture);// need to actually add a texture
         fireballTexture = new Texture(Gdx.files.internal("characters/tempFireBall.png"));
@@ -51,7 +53,7 @@ public class Player {
         width = PLAYER_DIMENSIONS / PPM;
         height = PLAYER_DIMENSIONS / PPM;
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
-
+        animation = new Animator(this, body, "characters/walkingRight.png");
         animation = new Animator(this, body, "characters/walkingRight.png");
     }
 
@@ -112,11 +114,18 @@ public class Player {
 
         Sprite fireball = new Sprite(fireballSprite);
         Vector2 direction = new Vector2(0, 0);
-        if (Gdx.input.isKeyPressed(Input.Keys.O) ) {
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
         // Get all the variables to initialise a spell
             position = body.getPosition();
             float startX = position.x;
             float startY = position.y;
+            Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            Vector3 mouseWorld  = camera.unproject(mousePos);
+            float targetX = mouseWorld.x / PPM;
+            float targetY = mouseWorld.y / PPM;
+            Vector2 aim = new Vector2(targetX, targetY)
+            .sub(body.getPosition().x, body.getPosition().y);
+
             Vector2 rawDir = new Vector2(body.getLinearVelocity());
             if (rawDir.len() == 0) rawDir.set(1,0);  // default to “right” if you weren’t moving
             rawDir.nor();
@@ -125,7 +134,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, rawDir.x, rawDir.y, width, height, speed, fireball ));
+            startY, aim, width, height, speed, fireball ));
         }
     }
     public void render(SpriteBatch batch) {

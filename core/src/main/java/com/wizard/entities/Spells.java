@@ -18,21 +18,15 @@ public class Spells {
     private float aliveTime = 0.f;
     private boolean destroyed = false;
     private static float maxTime = 3f;
-    /**
-     * @param world     your Box2D world
-     * @param startX    spawn X in meters
-     * @param startY    spawn Y in meters
-     * @param dirX      raw X component of direction (e.g. targetX - startX)
-     * @param dirY      raw Y component of direction
-     */
-    public Spells(World world, float startX, float startY,
-     float dirX, float dirY , float width, float height, float speed, Sprite spellSprite){
+
+    public Spells(World world, float startX, float startY, Vector2 rawDir , float width, float height, float speed, Sprite spellSprite){
     //  World
         this.world = world;
-        velocity = new Vector2(dirX, dirY);
+        velocity = new Vector2(rawDir);
         velocity.nor();
         velocity.scl(speed);
         //  Init a body
+        
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(startX, startY);
@@ -44,6 +38,7 @@ public class Spells {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
 
         body.createFixture(fixtureDef);
         body.setLinearVelocity(velocity);

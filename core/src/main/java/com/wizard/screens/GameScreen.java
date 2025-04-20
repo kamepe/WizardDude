@@ -46,7 +46,7 @@ public class GameScreen extends ScreenAdapter {
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager );
+        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera );
         // Set initial camera position
         camera.position.set(
             player.getX(),
