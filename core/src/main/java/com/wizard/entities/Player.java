@@ -14,6 +14,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
+
+import static com.wizard.utils.Constants.PLAYER_DIMENSIONS;
 import static com.wizard.utils.Constants.PPM;
 
 //InderStuff
@@ -38,14 +40,16 @@ public class Player {
     public Player(World world, float x, float y, EntityManager em) {
         this.world = world;
         this.entityManager = em;
-        texture = new Texture(Gdx.files.internal("characters/tempPlayer2.png"));
+        texture = new Texture(Gdx.files.internal("characters/walkingRight.png"));
         sprite = new Sprite(texture);// need to actually add a texture
-        fireballTexture = new Texture(Gdx.files.internal("characters/tempPlayer.png"));
+        fireballTexture = new Texture(Gdx.files.internal("characters/tempFireBall.png"));
         fireballSprite = new Sprite(fireballTexture);
         position = new Vector2();
-        position = new Vector2();
-        width = (sprite.getWidth() / (PPM * 10));
-        height = (sprite.getHeight() / (PPM * 10));
+        System.out.println(sprite.getWidth());
+//        width = (sprite.getWidth() / (PPM * 10));//not sure about these lines but pretty sure i can just get rid of them
+//        height = (sprite.getHeight() / (PPM * 10));
+        width = PLAYER_DIMENSIONS / PPM;
+        height = PLAYER_DIMENSIONS / PPM;
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
 
         animation = new Animator(this, body, "characters/walkingRight.png");

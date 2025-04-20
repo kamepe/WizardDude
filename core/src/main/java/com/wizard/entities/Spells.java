@@ -17,7 +17,7 @@ public class Spells {
     private Sprite  sprite;
     private float aliveTime = 0.f;
     private boolean destroyed = false;
-    private static float maxTime = 3.0f;
+    private static float maxTime = 3f;
     /**
      * @param world     your Box2D world
      * @param startX    spawn X in meters
@@ -32,13 +32,13 @@ public class Spells {
         velocity = new Vector2(dirX, dirY);
         velocity.nor();
         velocity.scl(speed);
-    //  Init a body
+        //  Init a body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(startX, startY);
         bodyDef.fixedRotation = true;
         body = world.createBody(bodyDef);
-    // Shapes
+        // Shapes
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width, height);
 
@@ -49,8 +49,8 @@ public class Spells {
         body.setLinearVelocity(velocity);
 
         this.sprite = spellSprite;
-        this.sprite.setSize(width , height );
-
+        this.sprite.setSize(width, height);
+         shape.dispose();
     }
     public void update(float delta){
         Vector2 pos = body.getPosition();
@@ -71,7 +71,7 @@ public class Spells {
             (position.y - sprite.getHeight()/2) * PPM,
             sprite.getWidth() * PPM, sprite.getHeight() * PPM);
     }
-   
+
     public boolean shouldDestroy(){
         return destroyed;
     }
