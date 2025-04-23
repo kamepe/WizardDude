@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -32,7 +33,7 @@ public class Enemy {
     private float stateTime = 0f;
     
     // stats
-    private int health;
+    private int health = 1;
     private float attackCooldown;
     private float detectionRange;
     private float moveSpeed;
@@ -94,6 +95,7 @@ public class Enemy {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f; // can be adjusted later
+
         
         Filter filter = new Filter();
         filter.categoryBits = Constants.CATEGORY_ENEMY;
@@ -101,7 +103,8 @@ public class Enemy {
         fixtureDef.filter.categoryBits = filter.categoryBits;
         fixtureDef.filter.maskBits = filter.maskBits;
 
-        body.createFixture(fixtureDef);
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
         shape.dispose();
     }
 
@@ -163,7 +166,8 @@ public class Enemy {
                 new Vector2(direction),
                 0.5f, 0.5f,
                 1.5f,
-                new Sprite(attackSprite)
+                new Sprite(attackSprite),
+                this
             ));
         } else {
             // melee attacks are spells but with a short range and lifetime
@@ -173,7 +177,8 @@ public class Enemy {
                 new Vector2(direction),
                 0.4f, 0.4f,
                 0.4f,
-                new Sprite(attackSprite)
+                new Sprite(attackSprite),
+                this
             );
             
             entityManager.addToActiveSpells(meleeAttack);
@@ -227,7 +232,6 @@ public class Enemy {
             height * PPM
         );
     }
-
     private void die() {
         dead = true;
     }

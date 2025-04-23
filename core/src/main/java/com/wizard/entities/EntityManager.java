@@ -59,6 +59,10 @@ public class EntityManager {
             }
         }
     }
+    public void onSpellHitEnemy(Spells s, Enemy e){
+        e.takeDamage();
+        s.destroy(); 
+    }
 
     public void renderAll() {
         for (Spells spell : spells) {

@@ -11,12 +11,14 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Enemy;
 import com.wizard.entities.EntityManager;
 import com.wizard.entities.EnemyType;
+import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
 
@@ -56,7 +58,7 @@ public class GameScreen extends ScreenAdapter {
         
         // Set the player in the entity manager
         entityManager.setPlayer(player);
-        
+        world.setContactListener(new GameContactListener(entityManager, player));
         // Spawn initial enemy
         spawnEnemy();
         

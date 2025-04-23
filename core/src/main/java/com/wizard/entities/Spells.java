@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -18,18 +19,24 @@ public class Spells {
     private float aliveTime = 0.f;
     private boolean destroyed = false;
     private static float maxTime = 3f;
+    private final Object owner;
 
-    public Spells(World world, float startX, float startY, Vector2 rawDir , float width, float height, float speed, Sprite spellSprite){
+    public Spells(World world, float startX, float startY, Vector2 rawDir , float width, float height, float speed, Sprite spellSprite, Object own ){
     //  World
         this.world = world;
         velocity = new Vector2(rawDir);
         velocity.nor();
         velocity.scl(speed);
         //  Init a body
-        
-        BodyDef bodyDef = new BodyDef();
+        this.createBody(startX, startY, width, height);
+        this.sprite = spellSprite;
+        this.sprite.setSize(width, height);
+        this.owner = own;
+    }
+    private void createBody(float x, float y, float width, float height){
+         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(startX, startY);
+        bodyDef.position.set(x, y);
         bodyDef.fixedRotation = true;
         body = world.createBody(bodyDef);
         // Shapes
@@ -40,11 +47,10 @@ public class Spells {
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
 
-        body.createFixture(fixtureDef);
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
         body.setLinearVelocity(velocity);
 
-        this.sprite = spellSprite;
-        this.sprite.setSize(width, height);
          shape.dispose();
     }
     public void update(float delta){
@@ -56,7 +62,7 @@ public class Spells {
             pos.y * PPM - sprite.getHeight() / 2f
             );
         if(aliveTime >= maxTime){
-            destroyed = true;
+            destroy();
         }
     }
     public void render(SpriteBatch batch){
@@ -66,9 +72,14 @@ public class Spells {
             (position.y - sprite.getHeight()/2) * PPM,
             sprite.getWidth() * PPM, sprite.getHeight() * PPM);
     }
-
+    public void destroy(){
+        destroyed = true;
+    }
     public boolean shouldDestroy(){
         return destroyed;
+    }
+    public Object getOwner(){
+        return owner;
     }
      public Sprite getSprite(){
         return sprite;

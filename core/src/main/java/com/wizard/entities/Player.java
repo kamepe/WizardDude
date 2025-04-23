@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -52,6 +53,7 @@ public class Player {
 //        height = (sprite.getHeight() / (PPM * 10));
         width = PLAYER_DIMENSIONS / PPM;
         height = PLAYER_DIMENSIONS / PPM;
+
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
         animation = new Animator(this, body, "characters/walkingRight.png");
         animation = new Animator(this, body, "characters/walkingRight.png");
@@ -74,8 +76,8 @@ public class Player {
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f; // probably not needed
 
-        body.createFixture(fixtureDef);
-
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
         shape.dispose();
     }
 
@@ -130,7 +132,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, width, height, speed, fireball ));
+            startY, aim, width, height, speed, fireball, this ));
         }
     }
     public void render(SpriteBatch batch) {
