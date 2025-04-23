@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -43,7 +44,7 @@ public class Player {
         this.world = world;
         this.entityManager = em;
         this.camera = cam;
-        texture = new Texture(Gdx.files.internal("characters/walkingRight.png"));
+        texture = new Texture(Gdx.files.internal("characters/wizard/right.png"));
         sprite = new Sprite(texture);// need to actually add a texture
         fireballTexture = new Texture(Gdx.files.internal("characters/tempFireBall.png"));
         fireballSprite = new Sprite(fireballTexture);
@@ -57,9 +58,8 @@ public class Player {
         width = spriteWpx / PPM;
         height = spriteHpx  / PPM;
 
-        createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
-        animation = new Animator(this, body, "characters/walkingRight.png");
-        animation = new Animator(this, body, "characters/walkingRight.png");
+        createBody(x, y);
+        animation = new Animator(this, body, "characters/wizard/down.png", true);
     }
 
     private void createBody(float x, float y) {
@@ -94,29 +94,48 @@ public class Player {
     }
 
     private void handleMovement(float deltaTime){
-        velocity = body.getLinearVelocity();
         Vector2 direction = new Vector2(0, 0);
+        boolean changed = false;
 
         // make these into switch cases and make diagonal movement divide by sqrt2 so not faster
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
-            currentDirection = Constants.Direction.LEFT;
-            System.out.println("LEFT");
+            if(currentDirection != Constants.Direction.LEFT){
+                changed = true;
+            }
+//            currentDirection = Constants.Direction.LEFT;
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction.x = Constants.MAX_SPEED;
-            currentDirection = Constants.Direction.RIGHT;
-            System.out.println("RIGHT");
+            if(currentDirection != Constants.Direction.RIGHT){
+                changed = true;
+            }
+//            currentDirection = Constants.Direction.RIGHT;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction.y = Constants.MAX_SPEED;
-            currentDirection = Constants.Direction.UP;
+            if(currentDirection != Constants.Direction.UP){
+                changed = true;
+            }
+//            currentDirection = Constants.Direction.UP;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             direction.y = -Constants.MAX_SPEED;
-            currentDirection = Constants.Direction.DOWN;
+            if(currentDirection != Constants.Direction.DOWN){
+                changed = true;
+            }
+//            currentDirection = Constants.Direction.DOWN;
+        }
+
+        if (direction.x != 0 && direction.y != 0) {
+            direction.scl(1f / (float)Math.sqrt(2));
+        }
+
+        if(changed){
+            setDirection(direction);
         }
 
         body.setLinearVelocity(direction);
     }
+
     private void handleSpellCast(float deltaTime){
 
         Sprite fireball = new Sprite(fireballSprite);
@@ -140,6 +159,39 @@ public class Player {
             startY, aim, width, height, speed, fireball, this ));
         }
     }
+
+    private void setDirection(Vector2 direction){
+
+        if((direction.x == 0 && direction.y == 0) || (direction.x == 0 && direction.y < 0)){ // Idle
+            currentDirection = Constants.Direction.DOWN;
+            animation = new Animator(this, body, "characters/wizard/down.png", false);
+        }
+        else if(direction.x == 0 && direction.y > 0){
+            currentDirection = Constants.Direction.UP;
+            animation = new Animator(this, body, "characters/wizard/up.png", false);
+        }
+        else if(direction.x > 0 && direction.y == 0){
+            currentDirection = Constants.Direction.RIGHT;
+            animation = new Animator(this, body, "characters/wizard/right.png", false);
+        }
+        else if(direction.x < 0 && direction.y == 0){
+            currentDirection = Constants.Direction.LEFT;
+            animation = new Animator(this, body, "characters/wizard/right.png", true);
+        }
+        else if(direction.x > 0 && direction.y > 0){
+            currentDirection = Constants.Direction.UPRIGHT;
+        }
+        else if(direction.x > 0 && direction.y < 0){
+            currentDirection = Constants.Direction.DOWNRIGHT;
+        }
+        else if(direction.x < 0 && direction.y > 0){
+            currentDirection = Constants.Direction.UPLEFT;
+        }
+        else if(direction.x < 0 && direction.y < 0){
+            currentDirection = Constants.Direction.DOWNLEFT;
+        }
+    }
+
     public void render(SpriteBatch batch) {
         position = body.getPosition();
 
