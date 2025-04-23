@@ -97,32 +97,27 @@ public class Player {
         Vector2 direction = new Vector2(0, 0);
         boolean changed = false;
 
-        // make these into switch cases and make diagonal movement divide by sqrt2 so not faster
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction.x = -Constants.MAX_SPEED;
             if(currentDirection != Constants.Direction.LEFT){
                 changed = true;
             }
-//            currentDirection = Constants.Direction.LEFT;
         } else if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction.x = Constants.MAX_SPEED;
             if(currentDirection != Constants.Direction.RIGHT){
                 changed = true;
             }
-//            currentDirection = Constants.Direction.RIGHT;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction.y = Constants.MAX_SPEED;
             if(currentDirection != Constants.Direction.UP){
                 changed = true;
             }
-//            currentDirection = Constants.Direction.UP;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             direction.y = -Constants.MAX_SPEED;
             if(currentDirection != Constants.Direction.DOWN){
                 changed = true;
             }
-//            currentDirection = Constants.Direction.DOWN;
         }
 
         if (direction.x != 0 && direction.y != 0) {
