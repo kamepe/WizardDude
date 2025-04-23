@@ -175,12 +175,14 @@ public class Player {
         }
         else if(direction.x > 0 && direction.y > 0){
             currentDirection = Constants.Direction.UPRIGHT;
+            animation = new Animator(this, body, "characters/wizard/upRight.png", false);
         }
         else if(direction.x > 0 && direction.y < 0){
             currentDirection = Constants.Direction.DOWNRIGHT;
         }
         else if(direction.x < 0 && direction.y > 0){
             currentDirection = Constants.Direction.UPLEFT;
+            animation = new Animator(this, body, "characters/wizard/upRight.png", true);
         }
         else if(direction.x < 0 && direction.y < 0){
             currentDirection = Constants.Direction.DOWNLEFT;
