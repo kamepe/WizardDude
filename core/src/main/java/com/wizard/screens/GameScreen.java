@@ -11,13 +11,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Enemy;
-import com.wizard.entities.EntityManager;
 import com.wizard.entities.EnemyType;
+import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
@@ -40,7 +40,7 @@ public class GameScreen extends ScreenAdapter {
     // enemy spawning
     private float enemySpawnTimer = 0;
     private final float ENEMY_SPAWN_INTERVAL = 5f; // Spawn enemy every 5 seconds
-
+      private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     public GameScreen(Main game){
         this.game = game;
@@ -139,6 +139,7 @@ public class GameScreen extends ScreenAdapter {
         player.render(batch);
         entityManager.renderAll();
         batch.end();
+        debugRenderer.render(world, camera.combined.scl(Constants.PPM));
     }
 
     public void resize(int width, int height){
@@ -154,6 +155,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void dispose(){
+        debugRenderer.dispose();
         tiledMap.dispose();
         renderer.dispose();
         player.dispose();

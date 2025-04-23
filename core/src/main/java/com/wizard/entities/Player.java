@@ -16,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
-import static com.wizard.utils.Constants.PLAYER_DIMENSIONS;
 import static com.wizard.utils.Constants.PPM;
 
 //InderStuff
@@ -36,6 +35,7 @@ public class Player {
 
     private float width;
     private float height;
+
     private Constants.Direction currentDirection;
 
 
@@ -51,8 +51,11 @@ public class Player {
         System.out.println(sprite.getWidth());
 //        width = (sprite.getWidth() / (PPM * 10));//not sure about these lines but pretty sure i can just get rid of them
 //        height = (sprite.getHeight() / (PPM * 10));
-        width = PLAYER_DIMENSIONS / PPM;
-        height = PLAYER_DIMENSIONS / PPM;
+        float spriteWpx = sprite.getWidth() / 4;
+        float spriteHpx = sprite.getHeight();
+
+        width = spriteWpx / PPM;
+        height = spriteHpx  / PPM;
 
         createBody(x, y);// Here im changing the cords because i have downsized the picture, may not be needed later
         animation = new Animator(this, body, "characters/walkingRight.png");
@@ -69,7 +72,9 @@ public class Player {
 
         //create fixture, collision shape
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
+        float halfW = width  * 0.5f;
+        float halfH = height * 0.5f;
+        shape.setAsBox(halfW, halfH);
 
         // Create fixture definition
         FixtureDef fixtureDef = new FixtureDef();

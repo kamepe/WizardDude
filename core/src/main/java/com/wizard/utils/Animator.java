@@ -41,13 +41,25 @@ public class Animator {
 
     // Rendering the animation
     public void render(SpriteBatch batch) {
-        batch.draw(
-            frames[current],
-            player.getX() * Constants.PPM - 50, // the 50 is because this sprite is in 100x100 sections if 32x32 then i think its centered
-            player.getY() * Constants.PPM - 50,
-            width * 1,
-            height * 1);
-    }
+    TextureRegion frame = frames[current];
+
+    // true pixel size of this frame
+    float frameWpx = frame.getRegionWidth();
+    float frameHpx = frame.getRegionHeight();
+
+    // body center in screen pixels
+    float centerX = player.getX() * Constants.PPM;
+    float centerY = player.getY() * Constants.PPM;
+
+    // draw bottom-left such that the frame is centered
+    batch.draw(frame,
+        centerX - frameWpx * 0.5f,
+        centerY - frameHpx * 0.5f,
+        frameWpx,
+        frameHpx
+    );
+}
+
 
     public void step() {
         duration -= delay;
