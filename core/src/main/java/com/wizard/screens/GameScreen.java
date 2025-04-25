@@ -36,11 +36,11 @@ public class GameScreen extends ScreenAdapter {
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
-    
+
     // enemy spawning
     private float enemySpawnTimer = 0;
     private final float ENEMY_SPAWN_INTERVAL = 5f; // Spawn enemy every 5 seconds
-      private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     public GameScreen(Main game){
         this.game = game;
@@ -55,13 +55,13 @@ public class GameScreen extends ScreenAdapter {
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera );
-        
+
         // Set the player in the entity manager
         entityManager.setPlayer(player);
         world.setContactListener(new GameContactListener(entityManager, player));
         // Spawn initial enemy
         spawnEnemy();
-        
+
         // Set initial camera position
         camera.position.set(
             player.getX(),
@@ -77,7 +77,7 @@ public class GameScreen extends ScreenAdapter {
         camera.update(); // these need to be after the world step
         player.update(delta);
         entityManager.updateAll(delta);
-        
+
         // Enemy spawning logic
         enemySpawnTimer += delta;
         if (enemySpawnTimer >= ENEMY_SPAWN_INTERVAL) {
@@ -94,13 +94,13 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(position);
         camera.update();
     }
-    
+
     // Enemy spawning method
     private void spawnEnemy() {
         // Randomly select enemy type
-        EnemyType type = (Math.random() < 0.5) ? 
+        EnemyType type = (Math.random() < 0.5) ?
             EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
-        
+
         // Random position at the edge of the screen
         float x, y;
         if (Math.random() < 0.5) {
@@ -112,9 +112,9 @@ public class GameScreen extends ScreenAdapter {
             x = (float) (Math.random() * Gdx.graphics.getWidth() / Constants.PPM);
             y = (Math.random() < 0.5) ? 0 : Gdx.graphics.getHeight() / Constants.PPM;
         }
-        
+
         // Create and add the enemy
-        Enemy enemy = new Enemy(world, x, y, entityManager, 
+        Enemy enemy = new Enemy(world, x, y, entityManager,
                                entityManager.getPlayer(), type);
         entityManager.addEnemy(enemy);
     }
