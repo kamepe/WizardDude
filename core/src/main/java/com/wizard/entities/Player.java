@@ -33,7 +33,7 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
-    private float health = 1;
+    private float health = 10;
     private float width;
     private float height;
     private boolean dead = false;
@@ -169,7 +169,7 @@ public class Player {
     }
     private void die() {
         dead = true;
-        world.destroyBody(this.body);
+        System.err.println("Player died");
     }
     // Getters for future use like collisions
     public float getX() {return position.x;}
