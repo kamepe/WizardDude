@@ -63,7 +63,10 @@ public class EntityManager {
         e.takeDamage();
         s.destroy(); 
     }
-
+    public void onSpellHitPlayer(Spells s, Player p){
+        p.takeDamage();
+        s.destroy();
+    }
     public void renderAll() {
         for (Spells spell : spells) {
             spell.render(batch);

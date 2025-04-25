@@ -33,9 +33,10 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
+    private float health = 1;
     private float width;
     private float height;
-
+    private boolean dead = false;
     private Constants.Direction currentDirection;
 
 
@@ -159,7 +160,17 @@ public class Player {
     public void dispose() {
         texture.dispose();
     }
-
+    public void takeDamage(){
+        health --;
+        System.out.println("player damaged / health: " + health);
+        if(health <= 0){
+            die();
+        }
+    }
+    private void die() {
+        dead = true;
+        world.destroyBody(this.body);
+    }
     // Getters for future use like collisions
     public float getX() {return position.x;}
 
