@@ -1,4 +1,6 @@
-
+/* I've edited main here to implement screen manager. If there is a error lmk
+ * - Inder
+ */
 package com.wizard;
 
 import com.badlogic.gdx.Game;
