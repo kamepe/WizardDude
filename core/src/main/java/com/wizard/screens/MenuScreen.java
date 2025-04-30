@@ -81,7 +81,6 @@ public class MenuScreen extends ScreenAdapter {
                      && x >= exitX && x <= exitX + BUTTON_W
                      && fy>= exitY && fy<= exitY + BUTTON_H) {
                     ScreenManager.exit();
-                    System.err.println("EXIT BUTTON TRIGGED");
                    
                 }
                 return true;
