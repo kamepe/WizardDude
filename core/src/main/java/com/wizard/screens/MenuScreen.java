@@ -63,11 +63,11 @@ public class MenuScreen extends ScreenAdapter {
         exitX = cx;
         exitY = cy - PADDING - BUTTON_H/2f;
 
-        
+        // now the input processor—no shadowing here!
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int x, int y, int p, int b) {
-                float fy = cam.viewportHeight - y; 
+                float fy = cam.viewportHeight - y; // flip Y
 
                 // PLAY button?
                 if (x >= playX && x <= playX + BUTTON_W
