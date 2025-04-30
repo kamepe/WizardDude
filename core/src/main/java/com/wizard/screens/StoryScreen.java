@@ -50,18 +50,20 @@ public class StoryScreen extends ScreenAdapter {
 
         // moving to next slides
         Gdx.input.setInputProcessor(new InputAdapter(){
-            @Override public boolean touchDown(int x, int y, int p, int b) {
+            @Override
+            public boolean touchDown(int x, int y, int p, int b) {
                 if (chars < texts[page].length()) {
-                    // finish current page instantly
+                    // finish typing instantly
                     chars = texts[page].length();
                 } else {
-                    // next page or start game
-                    page++;
-                    if (page >= texts.length) {
-                        ScreenManager.showGame();
-                    } else {
-                        time = 0f;
+                    // if we’re not yet on the last page, advance
+                    if (page < texts.length - 1) {
+                        page++;
+                        time  = 0f;
                         chars = 0;
+                    } else {
+                        // last page: go to game
+                        ScreenManager.showGame();
                     }
                 }
                 return true;
