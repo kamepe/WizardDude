@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -34,7 +33,7 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
-    private float health = 10;
+    private int health = 10;
     private float width;
     private float height;
     private boolean dead = false;
@@ -220,6 +219,7 @@ public class Player {
         dead = true;
         System.err.println("Player died");
     }
+    public int getHealth(){ return health;}
     // Getters for future use like collisions
     public float getX() {return position.x;}
 
