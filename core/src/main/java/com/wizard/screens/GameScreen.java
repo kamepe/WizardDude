@@ -25,6 +25,7 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
+import com.wizard.utils.VisibilityRadiusEffect;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -50,6 +51,9 @@ public class GameScreen extends ScreenAdapter {
     private static final int MAX_HEALTH = 10;
     private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
+    // Visibility radius effect
+    private VisibilityRadiusEffect visibilityEffect;
+    private boolean useVisibilityEffect = true; // Toggle for enabling/disabling effect
 
     public GameScreen(Main game){
         this.game = game;
@@ -70,13 +74,17 @@ public class GameScreen extends ScreenAdapter {
         world.setContactListener(new GameContactListener(entityManager, player));
         // Spawn initial enemy
         spawnEnemy();
-        
+
         healthSprites = new Sprite[MAX_HEALTH + 1];
         for (int i = 0; i <= MAX_HEALTH; i++) {
             Texture tex = new Texture(Gdx.files.internal("player_health/VIDA_" + i + ".png"));
             healthSprites[i] = new Sprite(tex);
         }
-        
+
+        // Create visibility radius effect
+        // Parameters: SpriteBatch, Player, radius (pixels), soft edge width (pixels)
+        visibilityEffect = new VisibilityRadiusEffect(batch, player, 250f, 70f);
+
         // Set initial camera position
         camera.position.set(
             player.getX(),
@@ -130,7 +138,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Create and add the enemy
         Enemy enemy = new Enemy(world, x, y, entityManager,
-                               entityManager.getPlayer(), type);
+            entityManager.getPlayer(), type);
         entityManager.addEnemy(enemy);
     }
 
@@ -144,19 +152,31 @@ public class GameScreen extends ScreenAdapter {
         // Update camera
         updateCamera();
 
+        if (useVisibilityEffect) {
+            // Begin visibility effect
+            visibilityEffect.begin();
+        }
+
         // Render map
         renderer.setView(camera);
         renderer.render();
 
-        // Render player
+        // Render player and entities
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         player.render(batch);
         entityManager.renderAll();
         batch.end();
-        debugRenderer.render(world, camera.combined.scl(Constants.PPM));
 
-        // Render the helth bar and adjust size
+        // Optional: render debug
+        // debugRenderer.render(world, camera.combined.scl(Constants.PPM));
+
+        if (useVisibilityEffect) {
+            // End visibility effect
+            visibilityEffect.end();
+        }
+
+        // Render the health bar - this is outside the visibility effect
         batch.setProjectionMatrix(uiProj);
         batch.begin();
         int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);
@@ -172,6 +192,7 @@ public class GameScreen extends ScreenAdapter {
 
     public void resize(int width, int height){
         camera.update();
+        visibilityEffect.resize(width, height);
     }
 
     public void pause(){
@@ -188,9 +209,14 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
         player.dispose();
         world.dispose();
+        visibilityEffect.dispose();
         for (Sprite s : healthSprites) {
             s.getTexture().dispose();
         }
     }
 
+    // Toggle visibility effect on/off
+    public void toggleVisibilityEffect() {
+        useVisibilityEffect = !useVisibilityEffect;
+    }
 }
