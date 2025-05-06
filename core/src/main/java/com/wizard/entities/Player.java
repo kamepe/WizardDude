@@ -33,12 +33,8 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
-<<<<<<< Updated upstream
     private int health = 10;
-=======
-    private float health = 10;
     private float scale = 0.7f;
->>>>>>> Stashed changes
     private float width;
     private float height;
     private boolean dead = false;
