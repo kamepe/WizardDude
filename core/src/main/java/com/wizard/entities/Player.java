@@ -33,7 +33,12 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
+<<<<<<< Updated upstream
     private int health = 10;
+=======
+    private float health = 10;
+    private float scale = 0.7f;
+>>>>>>> Stashed changes
     private float width;
     private float height;
     private boolean dead = false;
@@ -53,10 +58,13 @@ public class Player {
 //        width = (sprite.getWidth() / (PPM * 10));//not sure about these lines but pretty sure i can just get rid of them
 //        height = (sprite.getHeight() / (PPM * 10));
         float spriteWpx = sprite.getWidth() / 4;
-        float spriteHpx = sprite.getHeight();
+        float spriteHpx = sprite.getHeight() * 1.5f;
 
-        width = spriteWpx / PPM;
-        height = spriteHpx  / PPM;
+        width = (spriteWpx / PPM) * scale;
+        height = (spriteHpx  / PPM) * scale;
+
+        sprite.setSize(width * PPM, height * PPM);
+        sprite.setOriginCenter();
 
         createBody(x, y);
         animation = new Animator(this, body, "characters/wizard/down.png", true);
@@ -72,8 +80,8 @@ public class Player {
 
         //create fixture, collision shape
         PolygonShape shape = new PolygonShape();
-        float halfW = width  * 0.5f;
-        float halfH = height * 0.5f;
+        float halfW = width * scale  * 0.5f;
+        float halfH = height * scale * 0.5f;
         shape.setAsBox(halfW, halfH);
 
         // Create fixture definition
