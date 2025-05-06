@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
+import java.util.function.Predicate;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 
 
 public class Enemy {
@@ -24,11 +26,14 @@ public class Enemy {
     private Vector2 position;
     private EntityManager entityManager;
     private Player player;
+    private EnemyType type; // Store reference to the EnemyType
+
+    private boolean activated = false; // when an enemy sees a player activate them
 
     // animation
     private float width;
     private float height;
-    private Constants.Direction currentDirection = Constants.Direction.DOWN;
+    private Constants.Direction current_dir = Constants.Direction.DOWN;
     private Animation<TextureRegion> down, up, left, right;
     private float stateTime = 0f;
 
@@ -45,9 +50,11 @@ public class Enemy {
     private float timeSinceLastAttack = 0f;
     private Vector2 lastPlayerPos = new Vector2();
     private Vector2 playerVelocity = new Vector2();
-    private float predictionFactor = 0.82f; // I adjusted it until it became kind of accurate,  while testing
+    private float predictionFactor = 0.82f; // I adjusted it until it became kind of accurate, while testing
                                             // keep in mind that the players hitbox is completely broken
     public Enemy(World world, float x, float y, EntityManager em, Player player, EnemyType type) {
+        this.type = type; // Store the enemy type reference
+        
         down = new Animation<>(0.1f, loadStrip(type.getDownSprite()));
         up = new Animation<>(0.1f, loadStrip(type.getUpSprite()));
         left = new Animation<>(0.1f, loadStrip(type.getLeftSprite()));
@@ -74,7 +81,7 @@ public class Enemy {
 
     private TextureRegion[] loadStrip(String filename) {
         Texture sprite_part = new Texture(Gdx.files.internal("characters/enemy/" + filename));
-        TextureRegion[][] tmp = TextureRegion.split(sprite_part, 32, 32);
+        TextureRegion[][] tmp = TextureRegion.split(sprite_part, type.getSpriteSize(), type.getSpriteSize());
         TextureRegion[] frames = new TextureRegion[tmp[0].length];
         System.arraycopy(tmp[0], 0, frames, 0, frames.length);
         return frames;
@@ -90,7 +97,9 @@ public class Enemy {
         body.setUserData(this);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width/4, height/4); // smaller hitbox, not final
+        // Adjust hitbox size based on sprite size ratio
+        float sizeRatio = type.getSpriteSize() / 32f;
+        shape.setAsBox(width/4 * sizeRatio, height/4 * sizeRatio); // Scale hitbox for larger sprites
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -110,54 +119,131 @@ public class Enemy {
 
     public void update(float deltaTime) {
         if (dead) return;
-
-        Vector2 playerPosition = player.getPosition();
-        Vector2 direction;
+    
         position = body.getPosition();
         stateTime += deltaTime;
-
-        if (isRanged) {
-            // very basic prediction where to aim
-            playerVelocity.set(
-                (playerPosition.x - lastPlayerPos.x) / Math.max(deltaTime, 0.01f),
-                (playerPosition.y - lastPlayerPos.y) / Math.max(deltaTime, 0.01f)
-            );
-
-            lastPlayerPos.set(playerPosition);
-
-            // try to predict where the player will be
-            Vector2 predictedPos = new Vector2(
-                playerPosition.x + playerVelocity.x * predictionFactor,
-                playerPosition.y + playerVelocity.y * predictionFactor
-            );
-
-            // direction to the predicted position
-            direction = new Vector2(predictedPos.x - position.x, predictedPos.y - position.y);
-        } else {
-            // melee enemies use direct path
+        
+        // enemies only go after the player if they see it
+        if (!activated && hasLineOfSight()) {
+            activated = true;
+        }
+        if (activated) {
+            Vector2 playerPosition = player.getPosition();
+            Vector2 direction;
             direction = new Vector2(playerPosition.x - position.x, playerPosition.y - position.y);
-        }
+            float distance = direction.len();
+            if (distance > 0) {
+                direction.nor();
+            }
 
+
+            updateDirection(direction);
+            timeSinceLastAttack += deltaTime;
+            
+            // attack
+            if (distance < detectionRange && timeSinceLastAttack >= attackCooldown) {
+                if (!isRanged || hasLineOfSight()) {
+                    attackPlayer(direction);
+                    timeSinceLastAttack = 0;
+                }
+            }
+    
+            // movement
+            if (distance >= detectionRange) {
+                body.setLinearVelocity(direction.x * moveSpeed, direction.y * moveSpeed);
+            } else if (isRanged && !hasLineOfSight()) {
+                tryFindPathAroundObstacle(playerPosition);
+            } else if (isRanged) {
+                float optimalDistance = detectionRange * 0.85f;
+                if (distance < optimalDistance) {
+                    body.setLinearVelocity(-direction.x * moveSpeed * 0.5f, -direction.y * moveSpeed * 0.5f);
+                } else {
+                    body.setLinearVelocity(0, 0);
+                }
+            } else {
+                if (distance > 0.5f) {
+                    if (!hasLineOfSight()) {
+                        tryFindPathAroundObstacle(playerPosition);
+                    } else {
+                        body.setLinearVelocity(direction.x * moveSpeed, direction.y * moveSpeed);
+                    }
+                } else {
+                    body.setLinearVelocity(0, 0);
+                }
+            }
+        } else {
+            body.setLinearVelocity(0, 0);
+        }
+    }
+    
+
+    private boolean hasLineOfSight() {
+        // a ray from the enemy to the player
+        World world = this.world;
+        
+
+        Vector2 start = this.position.cpy();
+        Vector2 end = player.getPosition().cpy();
+        Vector2 direction = end.cpy().sub(start);
         float distance = direction.len();
-        direction.nor();
+        
+        final boolean[] sightBlocked = {false};
+        RayCastCallback callback = new RayCastCallback() {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                if (fixture.getUserData() instanceof Player || fixture.getUserData() instanceof Enemy) {
+                    return 1;
+                }
+                sightBlocked[0] = true;
+                return 0;
+            }
+        };
+        
+        world.rayCast(callback, start, end);
+        return !sightBlocked[0];
+    }
 
-        updateDirection(direction);
-        // reset velocity, (no knockback)
-        body.setLinearVelocity(0, 0);
-
-        timeSinceLastAttack += deltaTime;
-        if ((distance < detectionRange) && timeSinceLastAttack >= attackCooldown) {
-            attackPlayer(direction);
-            timeSinceLastAttack = 0;
+    private void tryFindPathAroundObstacle(Vector2 targetPosition) {
+        
+        //check if the path is clear
+        Predicate<Vector2> PathClear = (dir) -> {
+            final boolean[] clear = {true};
+            Vector2 end = new Vector2(position).add(dir.cpy().scl(1.0f));
+            
+            world.rayCast((fixture, point, normal, fraction) -> {
+                if (!(fixture.getUserData() instanceof Player || 
+                      fixture.getUserData() instanceof Enemy)) {
+                    clear[0] = false;
+                    return 0;
+                }
+                return 1;
+            }, position, end);
+            
+            return clear[0];
+        };
+        
+        // angles
+        float[] path_angles = new float[32];
+        for (int i = 0; i < 32; i++) {
+            path_angles[i] = (360f/32) * i;
         }
 
-        // go to the player if not in range
-        if (!(distance < detectionRange)) {
-            body.setLinearVelocity(direction.x * moveSpeed, direction.y * moveSpeed);
+        Vector2 baseDir = new Vector2(targetPosition).sub(position).nor();
+        // try angles until there is a path towards the player
+        for (float angle : path_angles) {
+            Vector2 testDir = new Vector2(baseDir).rotate(angle).nor();
+            if (PathClear.test(testDir)) {
+                body.setLinearVelocity(testDir.x * moveSpeed, testDir.y * moveSpeed);
+                return;
+            }
         }
     }
 
     private void attackPlayer(Vector2 direction) {
+        if (isRanged && !hasLineOfSight()) {
+            return;
+        }
+
         if (isRanged) {
             // copy of the direction vector
             entityManager.addToActiveSpells(new Spells(
@@ -170,18 +256,27 @@ public class Enemy {
                 this
             ));
         } else {
-            // melee attacks are spells but with a short range and lifetime
-            Spells meleeAttack = new Spells(
+
+            if (Vector2.dst(position.x, position.y, player.getX(), player.getY()) < 0.5f) { 
+                player.takeDamage(); 
+            }
+            // put the melee attack sprite the on the player's position
+            Vector2 playerPos = player.getPosition();
+            Spells melee = new Spells(
                 world,
-                position.x, position.y,
-                new Vector2(direction),
+                playerPos.x, playerPos.y,
+                new Vector2(0, 0),
                 0.4f, 0.4f,
-                0.4f,
+                0.2f,
                 new Sprite(attackSprite),
                 this
             );
 
-            entityManager.addToActiveSpells(meleeAttack);
+            // the visual indicator of the attack shouldnt disappear in 0.1 sec
+            melee.setVisualOnly(true);
+            melee.getBody().getFixtureList().get(0).setSensor(true);
+            melee.setMaxTime(0.6f);
+            entityManager.addToActiveSpells(melee);
         }
     }
 
@@ -196,15 +291,15 @@ public class Enemy {
     private void updateDirection(Vector2 direction) {
         if (Math.abs(direction.x) > Math.abs(direction.y)) {
             if (direction.x > 0) {
-                currentDirection = Constants.Direction.RIGHT;
+                current_dir = Constants.Direction.RIGHT;
             } else {
-                currentDirection = Constants.Direction.LEFT;
+                current_dir = Constants.Direction.LEFT;
             }
         } else {
             if (direction.y > 0) {
-                currentDirection = Constants.Direction.UP;
+                current_dir = Constants.Direction.UP;
             } else {
-                currentDirection = Constants.Direction.DOWN;
+                current_dir = Constants.Direction.DOWN;
             }
         }
     }
@@ -214,7 +309,7 @@ public class Enemy {
 
         TextureRegion frame = null;
 
-        switch (currentDirection) {
+        switch (current_dir) {
             case UP:    frame = up.getKeyFrame(stateTime, true); break;
             case DOWN:  frame = down.getKeyFrame(stateTime, true); break;
             case LEFT:  frame = left.getKeyFrame(stateTime, true); break;
@@ -243,6 +338,9 @@ public class Enemy {
     }
     public void dispose() {
         attackSprite.getTexture().dispose();
+    }
+    public void forceActivate() {
+        this.activated = true;
     }
 }
 
