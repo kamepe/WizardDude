@@ -31,7 +31,7 @@ public class Enemy {
     private Constants.Direction currentDirection = Constants.Direction.DOWN;
     private Animation<TextureRegion> down, up, left, right;
     private float stateTime = 0f;
-
+    
     // stats
     private int health = 1;
     private float attackCooldown;
@@ -39,7 +39,7 @@ public class Enemy {
     private float moveSpeed;
     private Sprite attackSprite;
     private boolean isRanged;
-
+    
     // state
     private boolean dead = false;
     private float timeSinceLastAttack = 0f;
@@ -86,17 +86,17 @@ public class Enemy {
         bodyDef.position.set(x, y);
         bodyDef.fixedRotation = true;
         body = world.createBody(bodyDef);
-
+        
         body.setUserData(this);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width/4, height/4); // smaller hitbox, not final
-
+        
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f; // can be adjusted later
 
-
+        
         Filter filter = new Filter();
         filter.categoryBits = Constants.CATEGORY_ENEMY;
         filter.maskBits = Constants.CATEGORY_PLAYER | Constants.CATEGORY_PLAYER_SPELL;
@@ -115,48 +115,48 @@ public class Enemy {
         Vector2 direction;
         position = body.getPosition();
         stateTime += deltaTime;
-
+        
         if (isRanged) {
             // very basic prediction where to aim
             playerVelocity.set(
                 (playerPosition.x - lastPlayerPos.x) / Math.max(deltaTime, 0.01f),
                 (playerPosition.y - lastPlayerPos.y) / Math.max(deltaTime, 0.01f)
             );
-
+            
             lastPlayerPos.set(playerPosition);
-
+            
             // try to predict where the player will be
             Vector2 predictedPos = new Vector2(
                 playerPosition.x + playerVelocity.x * predictionFactor,
                 playerPosition.y + playerVelocity.y * predictionFactor
             );
-
+            
             // direction to the predicted position
             direction = new Vector2(predictedPos.x - position.x, predictedPos.y - position.y);
         } else {
             // melee enemies use direct path
             direction = new Vector2(playerPosition.x - position.x, playerPosition.y - position.y);
         }
-
+        
         float distance = direction.len();
         direction.nor();
-
+        
         updateDirection(direction);
         // reset velocity, (no knockback)
         body.setLinearVelocity(0, 0);
-
+        
         timeSinceLastAttack += deltaTime;
         if ((distance < detectionRange) && timeSinceLastAttack >= attackCooldown) {
             attackPlayer(direction);
             timeSinceLastAttack = 0;
         }
-
+        
         // go to the player if not in range
         if (!(distance < detectionRange)) {
             body.setLinearVelocity(direction.x * moveSpeed, direction.y * moveSpeed);
         }
     }
-
+    
     private void attackPlayer(Vector2 direction) {
         if (isRanged) {
             // copy of the direction vector
@@ -180,11 +180,11 @@ public class Enemy {
                 new Sprite(attackSprite),
                 this
             );
-
+            
             entityManager.addToActiveSpells(meleeAttack);
         }
     }
-
+    
     public void takeDamage() {
         health--;
         System.out.println("enemy damaged / health: " + health);
@@ -192,7 +192,7 @@ public class Enemy {
             die();
         }
     }
-
+    
     private void updateDirection(Vector2 direction) {
         if (Math.abs(direction.x) > Math.abs(direction.y)) {
             if (direction.x > 0) {
@@ -211,9 +211,9 @@ public class Enemy {
 
     public void render(SpriteBatch batch) {
         if (dead) return;
-
+    
         TextureRegion frame = null;
-
+    
         switch (currentDirection) {
             case UP:    frame = up.getKeyFrame(stateTime, true); break;
             case DOWN:  frame = down.getKeyFrame(stateTime, true); break;
@@ -223,7 +223,7 @@ public class Enemy {
                 System.out.println("direction doesnt exist, defaulting to down.");
                 frame = down.getKeyFrame(stateTime, true);
         }
-
+    
         batch.draw(
             frame,
             (position.x - width/2) * PPM,
