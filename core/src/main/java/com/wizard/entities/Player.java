@@ -50,7 +50,7 @@ public class Player {
         this.camera = cam;
         texture = new Texture(Gdx.files.internal("characters/wizard/right.png"));
         sprite = new Sprite(texture);// need to actually add a texture
-        fireballTexture = new Texture(Gdx.files.internal("characters/tempFireBall.png"));
+        fireballTexture = new Texture(Gdx.files.internal("spells/fireball.png"));
         fireballSprite = new Sprite(fireballTexture);
         lightningTexture = new Texture(Gdx.files.internal("spells/lightning_spell.png"));
         lightningSprite = new Sprite(lightningTexture);
@@ -159,7 +159,7 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            float w = 0.2f, h = 0.2f, speed = 10f;
+            float w = 0.3f, h = 0.3f, speed = 10f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
