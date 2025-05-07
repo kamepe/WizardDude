@@ -29,10 +29,13 @@ public class Player {
     private Vector2 position;
     private Texture fireballTexture;
     private Sprite fireballSprite;
+    private Texture lightningTexture;
+    private Sprite lightningSprite;
     private Vector2 velocity; // Not sure if needed
     private EntityManager entityManager;
     private OrthographicCamera camera;
-
+    private static final float SPELL_COOLDOWN = 0.3f;  // seconds between casts
+    private float timeSinceLastSpell = SPELL_COOLDOWN; //counter
     private int health = 10;
     private float scale = 0.7f;
     private float width;
@@ -49,6 +52,8 @@ public class Player {
         sprite = new Sprite(texture);// need to actually add a texture
         fireballTexture = new Texture(Gdx.files.internal("characters/tempFireBall.png"));
         fireballSprite = new Sprite(fireballTexture);
+        lightningTexture = new Texture(Gdx.files.internal("spells/lightning_spell.png"));
+        lightningSprite = new Sprite(lightningTexture);
         position = new Vector2();
         System.out.println(sprite.getWidth());
 //        width = (sprite.getWidth() / (PPM * 10));//not sure about these lines but pretty sure i can just get rid of them
@@ -92,6 +97,7 @@ public class Player {
 
     public void update(float deltaTime){
         position = body.getPosition();
+        timeSinceLastSpell += deltaTime;
         handleMovement(deltaTime);
         animation.update(deltaTime);
         handleSpellCast(deltaTime);
@@ -138,8 +144,9 @@ public class Player {
     private void handleSpellCast(float deltaTime){
 
         Sprite fireball = new Sprite(fireballSprite);
+        Sprite lightning = new Sprite(lightningSprite);
         Vector2 direction = new Vector2(0, 0);
-
+        if (timeSinceLastSpell < SPELL_COOLDOWN) return;
          if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
         // Get all the variables to initialise a spell
             position = body.getPosition();
@@ -157,8 +164,9 @@ public class Player {
 
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, w, h, speed, fireball, this ));
+            timeSinceLastSpell = 0f;
         }
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        else if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
         // Get all the variables to initialise a spell
             position = body.getPosition();
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -170,11 +178,12 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            float width= 0.2f, height = 0.2f, speed = 5f;
+            float width= 0.4f, height = 0.4f, speed = 10f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, width, height, speed, fireball, this ));
+            startY, aim, width, height, speed, lightning, this ));
+            timeSinceLastSpell = 0f;
         }
     }
 
