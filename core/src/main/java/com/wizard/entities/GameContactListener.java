@@ -1,17 +1,27 @@
 package com.wizard.entities;
 
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.wizard.screens.GameScreen;
+
 
 public class GameContactListener implements ContactListener {
   private EntityManager entityManager;
   private Player player;
+  private TiledMap tiledMap;
+  private MapObjects objects;
+  private GameScreen gameScreen;
 
   public GameContactListener(EntityManager em, Player player) {
     this.entityManager = em;
     this.player = player;
+    tiledMap = new TmxMapLoader().load("maps/mapo.tmx");
+    objects = tiledMap.getLayers().get("collision").getObjects();
   }
 
   @Override
@@ -44,6 +54,14 @@ public class GameContactListener implements ContactListener {
       if (!s.isVisualOnly() && s.getOwner() != e && !(s.getOwner() instanceof Enemy)) {
         entityManager.onSpellHitEnemy(s, e);
       }
+    }
+     if (ob1 instanceof Spells && "wall".equals(ob2)) {
+      Spells s = (Spells) ob1;
+        entityManager.onSpellHitWall(s);
+
+    } else if (ob2 instanceof Spells && "wall".equals(ob1)) {
+      Spells s = (Spells) ob2;
+        entityManager.onSpellHitWall(s);
     }
   }
 

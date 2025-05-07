@@ -1,5 +1,7 @@
 package com.wizard.screens;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,18 +12,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-//<<<<<<< Updated upstream
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.physics.box2d.*;
-//=======
-//import com.badlogic.gdx.math.*;
-//import com.badlogic.gdx.physics.box2d.*;
-//>>>>>>> Stashed changes
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Enemy;
@@ -30,7 +35,6 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
-import java.util.ArrayList;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -97,7 +101,9 @@ public class GameScreen extends ScreenAdapter {
                 rect.width  * 0.5f * unitScale,
                 rect.height * 0.5f * unitScale
             );
-            body.createFixture(shape, 1.0f);
+            Fixture wallFixture = body.createFixture(shape, 1.0f);
+            wallFixture.setUserData("wall");
+
             shape.dispose();
         }
 
@@ -322,6 +328,9 @@ public class GameScreen extends ScreenAdapter {
         Matrix4 debugMatrix = camera.combined.cpy().scl(Constants.PPM);
         debugRenderer.render(world, debugMatrix);
 >>>>>>> Stashed changes*/
+    }
+    public TiledMap getMap(){
+        return tiledMap;
     }
 
     public void resize(int width, int height){

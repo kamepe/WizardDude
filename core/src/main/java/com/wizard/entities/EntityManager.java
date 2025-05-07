@@ -67,6 +67,9 @@ public class EntityManager {
         p.takeDamage();
         s.destroy();
     }
+    public void onSpellHitWall(Spells s){
+        s.destroy();
+    }
     public void renderAll() {
         for (Spells spell : spells) {
             spell.render(batch);
