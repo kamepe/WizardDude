@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
 import java.util.function.Predicate;
@@ -54,7 +55,7 @@ public class Enemy {
                                             // keep in mind that the players hitbox is completely broken
     public Enemy(World world, float x, float y, EntityManager em, Player player, EnemyType type) {
         this.type = type; // Store the enemy type reference
-        
+
         down = new Animation<>(0.1f, loadStrip(type.getDownSprite()));
         up = new Animation<>(0.1f, loadStrip(type.getUpSprite()));
         left = new Animation<>(0.1f, loadStrip(type.getLeftSprite()));
@@ -119,10 +120,10 @@ public class Enemy {
 
     public void update(float deltaTime) {
         if (dead) return;
-    
+
         position = body.getPosition();
         stateTime += deltaTime;
-        
+
         // enemies only go after the player if they see it
         if (!activated && hasLineOfSight()) {
             activated = true;
@@ -139,7 +140,7 @@ public class Enemy {
 
             updateDirection(direction);
             timeSinceLastAttack += deltaTime;
-            
+
             // attack
             if (distance < detectionRange && timeSinceLastAttack >= attackCooldown) {
                 if (!isRanged || hasLineOfSight()) {
@@ -147,7 +148,7 @@ public class Enemy {
                     timeSinceLastAttack = 0;
                 }
             }
-    
+
             // movement
             if (distance >= detectionRange) {
                 body.setLinearVelocity(direction.x * moveSpeed, direction.y * moveSpeed);
@@ -175,18 +176,18 @@ public class Enemy {
             body.setLinearVelocity(0, 0);
         }
     }
-    
+
 
     private boolean hasLineOfSight() {
         // a ray from the enemy to the player
         World world = this.world;
-        
+
 
         Vector2 start = this.position.cpy();
         Vector2 end = player.getPosition().cpy();
         Vector2 direction = end.cpy().sub(start);
         float distance = direction.len();
-        
+
         final boolean[] sightBlocked = {false};
         RayCastCallback callback = new RayCastCallback() {
             @Override
@@ -198,30 +199,30 @@ public class Enemy {
                 return 0;
             }
         };
-        
+
         world.rayCast(callback, start, end);
         return !sightBlocked[0];
     }
 
     private void tryFindPathAroundObstacle(Vector2 targetPosition) {
-        
+
         //check if the path is clear
         Predicate<Vector2> PathClear = (dir) -> {
             final boolean[] clear = {true};
             Vector2 end = new Vector2(position).add(dir.cpy().scl(1.0f));
-            
+
             world.rayCast((fixture, point, normal, fraction) -> {
-                if (!(fixture.getUserData() instanceof Player || 
+                if (!(fixture.getUserData() instanceof Player ||
                       fixture.getUserData() instanceof Enemy)) {
                     clear[0] = false;
                     return 0;
                 }
                 return 1;
             }, position, end);
-            
+
             return clear[0];
         };
-        
+
         // angles
         float[] path_angles = new float[32];
         for (int i = 0; i < 32; i++) {
@@ -257,8 +258,8 @@ public class Enemy {
             ));
         } else {
 
-            if (Vector2.dst(position.x, position.y, player.getX(), player.getY()) < 0.5f) { 
-                player.takeDamage(); 
+            if (Vector2.dst(position.x, position.y, player.getX(), player.getY()) < 0.5f) {
+                player.takeDamage();
             }
             // put the melee attack sprite the on the player's position
             Vector2 playerPos = player.getPosition();
@@ -329,6 +330,8 @@ public class Enemy {
     }
     private void die() {
         dead = true;
+        // Play enemy death sound when an enemy dies
+        AudioManager.playEnemyDeathSound();
     }
     public boolean shouldRemove() {
         return dead;
@@ -343,4 +346,3 @@ public class Enemy {
         this.activated = true;
     }
 }
-
