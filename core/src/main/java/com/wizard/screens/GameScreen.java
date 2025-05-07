@@ -61,6 +61,8 @@ public class GameScreen extends ScreenAdapter {
         this.game = game;
         this.world = new World(new Vector2(0, 0), true);
         this.batch = game.getBatch();
+        // Set input processor to null to prevent menu inputs from affecting the game
+        Gdx.input.setInputProcessor(null);
         // Tile map
         this.entityManager = new EntityManager(world, batch);
         tiledMap = new TmxMapLoader().load("maps/mapo.tmx");
