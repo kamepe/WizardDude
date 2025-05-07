@@ -76,6 +76,10 @@ public class EntityManager {
             enemy.render(batch);
         }
     }
+
+    public int getEnemyCount() {
+        return enemies.size();
+    }
     
     public Player getPlayer() {
         return player;

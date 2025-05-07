@@ -5,9 +5,9 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
@@ -30,6 +30,7 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
+import java.util.ArrayList;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -38,8 +39,6 @@ public class GameScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private World world;
 
-    private BitmapFont font;
-    //objects
     private Player player;
     private EntityManager entityManager;
 
@@ -48,14 +47,23 @@ public class GameScreen extends ScreenAdapter {
 
     // enemy spawning
     private float enemySpawnTimer = 0;
-    private final float ENEMY_SPAWN_INTERVAL = 5f; // Spawn enemy every 5 seconds
+    private final float ENEMY_SPAWN_INTERVAL = 8f; // in sec
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private Sprite[] healthSprites;
     private static final int MAX_HEALTH = 10;
-    private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+    private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     private float unitScale = 1f / Constants.PPM;
 
+    // spawning enemies variables
+    private Rectangle bossSmallRoom;
+    private Rectangle bossMedRoom;
+    private Rectangle bossLargeRoom;
+    private ArrayList<Rectangle> spawnAreas = new ArrayList<>();
+    private boolean smallBossSpawned = false;
+    private boolean mediumBossSpawned = false;
+    private boolean largeBossSpawned = false;
+    private Rectangle playerSpawnArea; // New field for player's spawn area
 
     public GameScreen(Main game){
         this.game = game;
@@ -93,20 +101,21 @@ public class GameScreen extends ScreenAdapter {
             shape.dispose();
         }
 
-
-
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.camera.zoom = 0.5f;
 
-        player = new Player(world,Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera );
+        player = new Player(world, Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera);
+        
+        // Set up player spawn area - initialize it before initializeRooms
+        playerSpawnArea = new Rectangle(
+            player.getX() - 3,
+            player.getY() - 3,
+            6, 6); // 6x6 area around player starting position
 
         // Set the player in the entity manager
         entityManager.setPlayer(player);
         world.setContactListener(new GameContactListener(entityManager, player));
-        // Spawn initial enemy
-        spawnEnemy();
-
         healthSprites = new Sprite[MAX_HEALTH + 1];
         for (int i = 0; i <= MAX_HEALTH; i++) {
             Texture tex = new Texture(Gdx.files.internal("player_health/VIDA_" + i + ".png"));
@@ -121,6 +130,7 @@ public class GameScreen extends ScreenAdapter {
         );
         camera.update();
 
+        initializeRooms();
     }
 
     public void update(float delta){
@@ -146,28 +156,129 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(position);
         camera.update();
     }
+    
+    private void initializeRooms() {
+        // get the boss room locations
+        MapLayer bossSmallLayer = tiledMap.getLayers().get("boss_small");
+        MapLayer bossMedLayer = tiledMap.getLayers().get("boss_med");
+        MapLayer bossLargeLayer = tiledMap.getLayers().get("boss_large");
+        MapLayer spawnLayer = tiledMap.getLayers().get("spawn");
+        
+        // get the door layers
+        MapLayer doorsSmallLayer = tiledMap.getLayers().get("doors_small_col");
+        MapLayer doorsMedLayer = tiledMap.getLayers().get("doors_med_col");
+        MapLayer doorsLargeLayer = tiledMap.getLayers().get("doors_large_col");
+        
+        // get and set boss rooms
+        RectangleMapObject bossMedObj = (RectangleMapObject) bossMedLayer.getObjects().get(0);
+        RectangleMapObject bossLargeObj = (RectangleMapObject) bossLargeLayer.getObjects().get(0);
+        RectangleMapObject bossSmallObj = (RectangleMapObject) bossSmallLayer.getObjects().get(0);
+        bossSmallRoom = bossSmallObj.getRectangle();
+        bossLargeRoom = bossLargeObj.getRectangle();
+        bossMedRoom = bossMedObj.getRectangle();
+        
+        // areas where normal enemies can be spawned
+        if (spawnLayer != null) {
+            for (MapObject obj : spawnLayer.getObjects()) {
+                if (obj instanceof RectangleMapObject) {
+                    Rectangle rect = ((RectangleMapObject) obj).getRectangle();
+                    spawnAreas.add(new Rectangle(rect));
+                }
+            }
+        }
+        
+        // rectangles -> world units
+        convertToWorldUnits(bossSmallRoom);
+        convertToWorldUnits(bossMedRoom);
+        convertToWorldUnits(bossLargeRoom);
+        
+        for (Rectangle rect : spawnAreas) {
+            convertToWorldUnits(rect);
+        }
+        
+        // spawn all enemies
+        spawnBosses();
+        prespawnEnemies();
+    }
+    
+    // convert rectangle -> world units
+    private void convertToWorldUnits(Rectangle rect) {
+        rect.x *= unitScale;
+        rect.y *= unitScale;
+        rect.width *= unitScale;
+        rect.height *= unitScale;
+    }
+    
+    private void prespawnEnemies() {
+        // spawn 3 enemies in each locked room
+        for (Rectangle area : spawnAreas) {
+            for (int i = 0; i < 3; i++) {
+                EnemyType type = (i % 2 == 0) ? 
+                    EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
+                
+                float x = area.x + (float)(Math.random() * area.width);
+                float y = area.y + (float)(Math.random() * area.height);
+                
+                // range of safe area on 4 as of now
+                float distToPlayer = Vector2.dst(x, y, player.getX(), player.getY());
+                if (distToPlayer < 4f) {
+                    continue;
+                }
+                // add enemy
+                Enemy enemy = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), type);
+                entityManager.addEnemy(enemy);
+            }
+        }
+    }
+    
+    private void spawnBosses() {
+        // spawn the bosses
+        if (!smallBossSpawned) {
+            float x = bossSmallRoom.x + bossSmallRoom.width / 2;
+            float y = bossSmallRoom.y + bossSmallRoom.height / 2;
+            Enemy smallBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.SMALL_BOSS);
+            entityManager.addEnemy(smallBoss);
+            smallBossSpawned = true;
+        }
+        if (!mediumBossSpawned) {
+            float x = bossMedRoom.x + bossMedRoom.width / 2;
+            float y = bossMedRoom.y + bossMedRoom.height / 2;
+            Enemy mediumBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.MEDIUM_BOSS);
+            entityManager.addEnemy(mediumBoss);
+            mediumBossSpawned = true;
+        }
+        if (!largeBossSpawned) {
+            float x = bossLargeRoom.x + bossLargeRoom.width / 2;
+            float y = bossLargeRoom.y + bossLargeRoom.height / 2;
+            Enemy largeBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.LARGE_BOSS);
+            entityManager.addEnemy(largeBoss);
+            largeBossSpawned = true;
+        }
+    }
 
     // Enemy spawning method
     private void spawnEnemy() {
-        // Randomly select enemy type
-        EnemyType type = (Math.random() < 0.5) ?
-            EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
-
-        // Random position at the edge of the screen
-        float x, y;
+        // Randomly select an enemy type
+        EnemyType type;
         if (Math.random() < 0.5) {
-            // Spawn on left or right edge
-            x = (Math.random() < 0.5) ? 0 : Gdx.graphics.getWidth() / Constants.PPM;
-            y = (float) (Math.random() * Gdx.graphics.getHeight() / Constants.PPM);
+            type = EnemyType.RANGED_WIZARD;
         } else {
-            // Spawn on top or bottom edge
-            x = (float) (Math.random() * Gdx.graphics.getWidth() / Constants.PPM);
-            y = (Math.random() < 0.5) ? 0 : Gdx.graphics.getHeight() / Constants.PPM;
+            type = EnemyType.MELEE_SKELETON;
+        }
+
+        // randomly select a spawn area
+        Rectangle spawnArea = spawnAreas.get((int)(Math.random() * spawnAreas.size()));
+        float x = spawnArea.x + (float)(Math.random() * spawnArea.width);
+        float y = spawnArea.y + (float)(Math.random() * spawnArea.height);
+
+        if (playerSpawnArea != null && 
+            (playerSpawnArea.contains(x, y) || 
+             playerSpawnArea.overlaps(new Rectangle(x - 0.5f, y - 0.5f, 1f, 1f)))) {
+            return;
         }
 
         // Create and add the enemy
-        Enemy enemy = new Enemy(world, x, y, entityManager,
-                               entityManager.getPlayer(), type);
+        Enemy enemy = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), type);
         entityManager.addEnemy(enemy);
     }
 

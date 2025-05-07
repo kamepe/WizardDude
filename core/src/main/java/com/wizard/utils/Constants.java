@@ -2,7 +2,7 @@ package com.wizard.utils;
 
 public class Constants {
     public static final float PPM = 100f;
-    public static final float MAX_SPEED = 1.7f;
+    public static final float MAX_SPEED = 0.6f;
     public static final float PLAYER_DIMENSIONS = 32.0f;
 
     // Collision categories for physics filtering

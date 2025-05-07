@@ -20,6 +20,7 @@ public class Spells {
     private boolean destroyed = false;
     private static float maxTime = 3f;
     private final Object owner;
+    private boolean isVisualOnly = false;
 
     public Spells(World world, float startX, float startY, Vector2 rawDir , float width, float height, float speed, Sprite spellSprite, Object own ){
     //  World
@@ -34,25 +35,27 @@ public class Spells {
         this.owner = own;
     }
     private void createBody(float x, float y, float width, float height){
-         BodyDef bodyDef = new BodyDef();
+        BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
         bodyDef.fixedRotation = true;
         body = world.createBody(bodyDef);
+        
         // Shapes
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width, height);
-
+        // Reduce hitbox by 80% (multiply width and height by 0.2)
+        shape.setAsBox(width * 0.2f, height * 0.2f);
+    
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
-
+    
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
         body.setLinearVelocity(velocity);
-
-         shape.dispose();
+        shape.dispose();
     }
+
     public void update(float delta){
         Vector2 pos = body.getPosition();
         aliveTime += delta;
@@ -90,5 +93,13 @@ public class Spells {
     public Body getBody(){
         return body;
     }
-
+    public void setMaxTime(float time) {
+        maxTime = time;
+    }
+    public void setVisualOnly(boolean visualOnly) {
+        this.isVisualOnly = visualOnly;
+    }
+    public boolean isVisualOnly() {
+        return isVisualOnly;
+    }
 }
