@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -35,6 +36,7 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
+import com.wizard.utils.ShaderManager;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -69,10 +71,16 @@ public class GameScreen extends ScreenAdapter {
     private boolean largeBossSpawned = false;
     private Rectangle playerSpawnArea; // New field for player's spawn area
 
+    private ShaderProgram vignetteShader;
+
     public GameScreen(Main game){
         this.game = game;
         this.world = new World(new Vector2(0, 0), true);
         this.batch = game.getBatch();
+
+        // Initialize shader
+        vignetteShader = ShaderManager.getInstance().getVignetteShader();
+
         // Set input processor to null to prevent menu inputs from affecting the game
         Gdx.input.setInputProcessor(null);
         // Tile map
@@ -112,7 +120,7 @@ public class GameScreen extends ScreenAdapter {
         this.camera.zoom = 0.5f;
 
         player = new Player(world, Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera);
-        
+
         // Set up player spawn area - initialize it before initializeRooms
         playerSpawnArea = new Rectangle(
             player.getX() - 3,
@@ -162,19 +170,19 @@ public class GameScreen extends ScreenAdapter {
         camera.position.set(position);
         camera.update();
     }
-    
+
     private void initializeRooms() {
         // get the boss room locations
         MapLayer bossSmallLayer = tiledMap.getLayers().get("boss_small");
         MapLayer bossMedLayer = tiledMap.getLayers().get("boss_med");
         MapLayer bossLargeLayer = tiledMap.getLayers().get("boss_large");
         MapLayer spawnLayer = tiledMap.getLayers().get("spawn");
-        
+
         // get the door layers
         MapLayer doorsSmallLayer = tiledMap.getLayers().get("doors_small_col");
         MapLayer doorsMedLayer = tiledMap.getLayers().get("doors_med_col");
         MapLayer doorsLargeLayer = tiledMap.getLayers().get("doors_large_col");
-        
+
         // get and set boss rooms
         RectangleMapObject bossMedObj = (RectangleMapObject) bossMedLayer.getObjects().get(0);
         RectangleMapObject bossLargeObj = (RectangleMapObject) bossLargeLayer.getObjects().get(0);
@@ -182,7 +190,7 @@ public class GameScreen extends ScreenAdapter {
         bossSmallRoom = bossSmallObj.getRectangle();
         bossLargeRoom = bossLargeObj.getRectangle();
         bossMedRoom = bossMedObj.getRectangle();
-        
+
         // areas where normal enemies can be spawned
         if (spawnLayer != null) {
             for (MapObject obj : spawnLayer.getObjects()) {
@@ -192,21 +200,21 @@ public class GameScreen extends ScreenAdapter {
                 }
             }
         }
-        
+
         // rectangles -> world units
         convertToWorldUnits(bossSmallRoom);
         convertToWorldUnits(bossMedRoom);
         convertToWorldUnits(bossLargeRoom);
-        
+
         for (Rectangle rect : spawnAreas) {
             convertToWorldUnits(rect);
         }
-        
+
         // spawn all enemies
         spawnBosses();
         prespawnEnemies();
     }
-    
+
     // convert rectangle -> world units
     private void convertToWorldUnits(Rectangle rect) {
         rect.x *= unitScale;
@@ -214,17 +222,17 @@ public class GameScreen extends ScreenAdapter {
         rect.width *= unitScale;
         rect.height *= unitScale;
     }
-    
+
     private void prespawnEnemies() {
         // spawn 3 enemies in each locked room
         for (Rectangle area : spawnAreas) {
             for (int i = 0; i < 3; i++) {
-                EnemyType type = (i % 2 == 0) ? 
+                EnemyType type = (i % 2 == 0) ?
                     EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
-                
+
                 float x = area.x + (float)(Math.random() * area.width);
                 float y = area.y + (float)(Math.random() * area.height);
-                
+
                 // range of safe area on 4 as of now
                 float distToPlayer = Vector2.dst(x, y, player.getX(), player.getY());
                 if (distToPlayer < 4f) {
@@ -236,7 +244,7 @@ public class GameScreen extends ScreenAdapter {
             }
         }
     }
-    
+
     private void spawnBosses() {
         // spawn the bosses
         if (!smallBossSpawned) {
@@ -277,9 +285,9 @@ public class GameScreen extends ScreenAdapter {
         float x = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float y = spawnArea.y + (float)(Math.random() * spawnArea.height);
 
-        if (playerSpawnArea != null && 
-            (playerSpawnArea.contains(x, y) || 
-             playerSpawnArea.overlaps(new Rectangle(x - 0.5f, y - 0.5f, 1f, 1f)))) {
+        if (playerSpawnArea != null &&
+            (playerSpawnArea.contains(x, y) ||
+                playerSpawnArea.overlaps(new Rectangle(x - 0.5f, y - 0.5f, 1f, 1f)))) {
             return;
         }
 
@@ -298,7 +306,16 @@ public class GameScreen extends ScreenAdapter {
         // Update camera
         updateCamera();
 
-        // Render map
+        // Set shader
+        vignetteShader.bind();
+        vignetteShader.setUniformf("u_resolution", Gdx.graphics.getWidth()*2, Gdx.graphics.getHeight()*2);
+
+        // Apply shader to the batch for world rendering
+        batch.setShader(vignetteShader);
+
+        // Apply shader to the tiled map renderer
+        renderer.getBatch().setShader(vignetteShader);
+
         renderer.setView(camera);
         renderer.render();
 
@@ -308,7 +325,8 @@ public class GameScreen extends ScreenAdapter {
         player.render(batch);
         entityManager.renderAll();
         batch.end();
-//<<<<<<< Updated upstream
+
+        batch.setShader(null);
         debugRenderer.render(world, camera.combined.scl(Constants.PPM));
 
         // Render the helth bar and adjust size
@@ -323,12 +341,10 @@ public class GameScreen extends ScreenAdapter {
         bar.setPosition(10, Gdx.graphics.getHeight() - desiredHeight - 10);
         bar.draw(batch);
         batch.end();
-/*=======
 
-        Matrix4 debugMatrix = camera.combined.cpy().scl(Constants.PPM);
-        debugRenderer.render(world, debugMatrix);
->>>>>>> Stashed changes*/
+        batch.setShader(vignetteShader);
     }
+
     public TiledMap getMap(){
         return tiledMap;
     }
@@ -351,9 +367,9 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
         player.dispose();
         world.dispose();
+        vignetteShader.dispose();
         for (Sprite s : healthSprites) {
             s.getTexture().dispose();
         }
     }
-
 }
