@@ -158,6 +158,24 @@ public class Player {
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, w, h, speed, fireball, this ));
         }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        // Get all the variables to initialise a spell
+            position = body.getPosition();
+            Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            Vector3 mouseWorld  = camera.unproject(mousePos);
+            float startX = position.x;
+            float startY = position.y;
+            float targetX = mouseWorld.x / PPM;
+            float targetY = mouseWorld.y / PPM;
+            Vector2 aim = new Vector2(targetX, targetY)
+            .sub(body.getPosition().x, body.getPosition().y);
+
+            float width= 0.2f, height = 0.2f, speed = 5f;
+
+
+            entityManager.addToActiveSpells(new Spells(world, startX,
+            startY, aim, width, height, speed, fireball, this ));
+        }
     }
 
     private void setDirection(Vector2 direction){
