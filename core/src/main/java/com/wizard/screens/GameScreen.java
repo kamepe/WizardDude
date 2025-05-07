@@ -21,6 +21,7 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
+import com.badlogic.gdx.InputAdapter;
 
 public class GameScreen extends ScreenAdapter {
     private Main game;
@@ -148,6 +149,24 @@ public class GameScreen extends ScreenAdapter {
 
     public void pause(){
 
+    }
+
+    public void show() {
+        // once we switch to GameScreen, clear out the old StoryScreen listener
+        // and (optionally) install your game’s own InputProcessor
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            // e.g. handle keys or touches here:
+            @Override
+            public boolean keyDown(int keycode) {
+                
+                return true;
+            }
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                
+                return true;
+            }
+        });
     }
 
     public void resume(){
