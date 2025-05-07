@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Animator;
+import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
 
@@ -133,6 +134,13 @@ public class Player {
         }
 
         body.setLinearVelocity(direction);
+
+        // Play walking sound if player is moving, stop it if player is not moving
+        if (direction.x != 0 || direction.y != 0) {
+            AudioManager.playWalkingSound();
+        } else {
+            AudioManager.stopWalkingSound();
+        }
     }
 
     private void handleSpellCast(float deltaTime){
@@ -156,6 +164,9 @@ public class Player {
 
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, width, height, speed, fireball, this ));
+
+            // Play player spell sound when a spell is cast
+            AudioManager.playPlayerSpellSound();
         }
     }
 
@@ -215,6 +226,8 @@ public class Player {
     public void takeDamage(){
         health --;
         System.out.println("player damaged / health: " + health);
+        // Play player damage sound when the player takes damage
+        AudioManager.playPlayerDamageSound();
         if(health <= 0){
             die();
         }

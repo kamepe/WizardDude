@@ -62,10 +62,13 @@ public class MenuScreen extends ScreenAdapter {
                 float fy = cam.viewportHeight - y;
                 if (x >= playX && x <= playX + BUTTON_W
                  && fy>= playY && fy<= playY + BUTTON_H) {
+                    // Play button click sound is handled in ScreenManager.showGame()
                     ScreenManager.showGame();
                 }
                 else if (x >= exitX && x <= exitX + BUTTON_W
                       && fy>= exitY && fy<= exitY + BUTTON_H) {
+                    // Play button click sound before exiting
+                    com.wizard.utils.AudioManager.playButtonClickSound();
                     ScreenManager.exit();
                 }
                 return true;
@@ -100,10 +103,3 @@ public class MenuScreen extends ScreenAdapter {
         exit.dispose();
     }
 }
-
-
-
-
-
-
-
