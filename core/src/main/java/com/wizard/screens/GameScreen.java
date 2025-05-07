@@ -61,6 +61,10 @@ public class GameScreen extends ScreenAdapter {
     private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     private float unitScale = 1f / Constants.PPM;
 
+    // Map dimensions in world units
+    private float mapWidthInWorldUnits;
+    private float mapHeightInWorldUnits;
+
     // spawning enemies variables
     private Rectangle bossSmallRoom;
     private Rectangle bossMedRoom;
@@ -87,6 +91,16 @@ public class GameScreen extends ScreenAdapter {
         this.entityManager = new EntityManager(world, batch);
         tiledMap = new TmxMapLoader().load("maps/mapo.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap, 1);
+
+        // Calculate map dimensions in world units
+        int mapWidth = tiledMap.getProperties().get("width", Integer.class);
+        int mapHeight = tiledMap.getProperties().get("height", Integer.class);
+        int tileWidth = tiledMap.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = tiledMap.getProperties().get("tileheight", Integer.class);
+
+        // Calculate map dimensions in world units
+        mapWidthInWorldUnits = mapWidth * tileWidth * unitScale;
+        mapHeightInWorldUnits = mapHeight * tileHeight * unitScale;
 
         // Collision of walls
         MapObjects objects = tiledMap.getLayers().get("collision").getObjects();
@@ -163,10 +177,32 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateCamera() {
+        // Get the camera position
         Vector3 position = camera.position;
+
+        // Set the camera to follow the player
         position.x = player.getX() * Constants.PPM;
         position.y = player.getY() * Constants.PPM;
 
+        // Calculate the camera boundaries
+        float viewportWidth = camera.viewportWidth * camera.zoom;
+        float viewportHeight = camera.viewportHeight * camera.zoom;
+
+        // Calculate the camera's half-width and half-height
+        float cameraHalfWidth = viewportWidth / 2f;
+        float cameraHalfHeight = viewportHeight / 2f;
+
+        // Clamp the camera position to stay within map boundaries
+        float mapWidthInPixels = mapWidthInWorldUnits * Constants.PPM;
+        float mapHeightInPixels = mapHeightInWorldUnits * Constants.PPM;
+
+        // Clamp X position
+        position.x = MathUtils.clamp(position.x, cameraHalfWidth, mapWidthInPixels - cameraHalfWidth);
+
+        // Clamp Y position
+        position.y = MathUtils.clamp(position.y, cameraHalfHeight, mapHeightInPixels - cameraHalfHeight);
+
+        // Update the camera position
         camera.position.set(position);
         camera.update();
     }
