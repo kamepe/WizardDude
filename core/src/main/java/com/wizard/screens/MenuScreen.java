@@ -1,4 +1,10 @@
-
+/*
+ * This is code for MainMenu screen.
+ * How it works:
+ * Background animations is set of 5 sprites which play in loop (To make it smooth ill create new sprites) -- TODO
+ * Play button calls Screenmanager to switch to game screen
+ * Exit calls exit in screenmanager
+ */
 package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -17,24 +23,26 @@ public class MenuScreen extends ScreenAdapter {
     private static final float PADDING  = 10f;
 
     // animation timing
-    private static final float FRAME_DURATION = 0.3f; // seconds per bg‐frame
+    private static final float FRAME_DURATION = 0.3f;
 
     private final SpriteBatch batch;
     private final OrthographicCamera cam;
 
-    // SUPPORT FOR MULTI-FRAME BG
     private final Texture[] bgFrames;
     private float stateTime = 0f;
 
     private final Texture play, exit;
     private final float playX, playY, exitX, exitY;
 
+    // field we actually mutate
+    private boolean CAN_EXIT = true;
+
     public MenuScreen(Main game) {
-        batch = game.getBatch();
-        cam   = new OrthographicCamera();
+        this.batch = game.getBatch();
+        this.cam   = new OrthographicCamera();
         cam.setToOrtho(false);
 
-        // load your 5 background images into an array
+        // load background frames
         bgFrames = new Texture[] {
             new Texture(Gdx.files.internal("backgrounds/sprites0.png")),
             new Texture(Gdx.files.internal("backgrounds/sprites1.png")),
@@ -43,30 +51,37 @@ public class MenuScreen extends ScreenAdapter {
             new Texture(Gdx.files.internal("backgrounds/sprites4.png"))
         };
 
-        // load buttons
+        // load button textures
         play = new Texture(Gdx.files.internal("play.png"));
         exit = new Texture(Gdx.files.internal("exit.png"));
 
-        // compute centered button positions
+        // calculate button positions
         float cx = (cam.viewportWidth  - BUTTON_W) / 2f;
         float cy = cam.viewportHeight / 2f;
         playX = cx;
-        playY = cy + PADDING;
+        playY = cy + PADDING + BUTTON_H/2f;
         exitX = cx;
-        exitY = cy - BUTTON_H - PADDING;
+        exitY = cy - PADDING - BUTTON_H/2f;
 
-        // input handler
+        // now the input processor—no shadowing here!
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int x, int y, int p, int b) {
-                float fy = cam.viewportHeight - y;
+                float fy = cam.viewportHeight - y; // flip Y
+
+                // PLAY button?
                 if (x >= playX && x <= playX + BUTTON_W
                  && fy>= playY && fy<= playY + BUTTON_H) {
-                    ScreenManager.showGame();
+                    ScreenManager.showStory();
+                    CAN_EXIT = false;  
+                    System.err.println(CAN_EXIT);
                 }
-                else if (x >= exitX && x <= exitX + BUTTON_W
-                      && fy>= exitY && fy<= exitY + BUTTON_H) {
+                // EXIT button (only if CAN_EXIT is still true)
+                else if (CAN_EXIT
+                     && x >= exitX && x <= exitX + BUTTON_W
+                     && fy>= exitY && fy<= exitY + BUTTON_H) {
                     ScreenManager.exit();
+                   
                 }
                 return true;
             }
@@ -75,7 +90,6 @@ public class MenuScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        // advance the animation clock
         stateTime += delta;
         int frameIdx = (int)(stateTime / FRAME_DURATION) % bgFrames.length;
         Texture bg = bgFrames[frameIdx];
@@ -83,7 +97,6 @@ public class MenuScreen extends ScreenAdapter {
         cam.update();
         batch.setProjectionMatrix(cam.combined);
 
-        // draw current bg frame + buttons
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.draw(bg, 0, 0, cam.viewportWidth, cam.viewportHeight);
@@ -94,16 +107,8 @@ public class MenuScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        // dispose all bg frames
         for (Texture t : bgFrames) t.dispose();
         play.dispose();
         exit.dispose();
     }
 }
-
-
-
-
-
-
-

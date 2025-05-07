@@ -18,19 +18,6 @@ public class GameContactListener implements ContactListener{
       Object ob1 =  contact.getFixtureA().getUserData();
       Object ob2 =  contact.getFixtureB().getUserData();
       
-      if(ob1 instanceof Spells && ob2 instanceof Player){
-        Spells s = (Spells) ob1;
-        Player p = (Player) ob2;
-        if (s.getOwner() != p){
-            entityManager.onSpellHitPlayer((Spells) ob1, (Player) ob2);
-        }
-      }else if(ob2 instanceof Spells && ob1 instanceof Player){
-        Spells s = (Spells) ob2;
-        Player p = (Player) ob1;
-        if (s.getOwner() != p){
-            entityManager.onSpellHitPlayer((Spells) ob2, (Player) ob1);
-        }
-      }
       if(ob1 instanceof Spells && ob2 instanceof Enemy){
         Spells s = (Spells) ob1;
         Enemy e = (Enemy) ob2;
