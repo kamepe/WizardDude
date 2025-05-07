@@ -4,11 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -43,6 +47,11 @@ public class GameScreen extends ScreenAdapter {
     private final float ENEMY_SPAWN_INTERVAL = 5f; // Spawn enemy every 5 seconds
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
+    private Sprite[] healthSprites;
+    private static final int MAX_HEALTH = 10;
+    private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
+
     public GameScreen(Main game){
         this.game = game;
         this.world = new World(new Vector2(0, 0), true);
@@ -62,7 +71,13 @@ public class GameScreen extends ScreenAdapter {
         world.setContactListener(new GameContactListener(entityManager, player));
         // Spawn initial enemy
         spawnEnemy();
-
+        
+        healthSprites = new Sprite[MAX_HEALTH + 1];
+        for (int i = 0; i <= MAX_HEALTH; i++) {
+            Texture tex = new Texture(Gdx.files.internal("player_health/VIDA_" + i + ".png"));
+            healthSprites[i] = new Sprite(tex);
+        }
+        
         // Set initial camera position
         camera.position.set(
             player.getX(),
@@ -141,6 +156,19 @@ public class GameScreen extends ScreenAdapter {
         entityManager.renderAll();
         batch.end();
         debugRenderer.render(world, camera.combined.scl(Constants.PPM));
+
+        // Render the helth bar and adjust size
+        batch.setProjectionMatrix(uiProj);
+        batch.begin();
+        int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);
+        Sprite bar = healthSprites[hp];
+        float desiredWidth  = 150f;
+        float desiredHeight = 20f;
+
+        bar.setSize(desiredWidth, desiredHeight);
+        bar.setPosition(10, Gdx.graphics.getHeight() - desiredHeight - 10);
+        bar.draw(batch);
+        batch.end();
     }
 
     public void resize(int width, int height){
@@ -179,6 +207,9 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
         player.dispose();
         world.dispose();
+        for (Sprite s : healthSprites) {
+            s.getTexture().dispose();
+        }
     }
 
 }

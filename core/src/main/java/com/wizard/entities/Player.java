@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -34,9 +33,10 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
 
+    private int health = 10;
     private float width;
     private float height;
-
+    private boolean dead = false;
     private Constants.Direction currentDirection;
 
 
@@ -175,12 +175,14 @@ public class Player {
         }
         else if(direction.x > 0 && direction.y > 0){
             currentDirection = Constants.Direction.UPRIGHT;
+            animation = new Animator(this, body, "characters/wizard/upRight.png", false);
         }
         else if(direction.x > 0 && direction.y < 0){
             currentDirection = Constants.Direction.DOWNRIGHT;
         }
         else if(direction.x < 0 && direction.y > 0){
             currentDirection = Constants.Direction.UPLEFT;
+            animation = new Animator(this, body, "characters/wizard/upRight.png", true);
         }
         else if(direction.x < 0 && direction.y < 0){
             currentDirection = Constants.Direction.DOWNLEFT;
@@ -206,7 +208,18 @@ public class Player {
     public void dispose() {
         texture.dispose();
     }
-
+    public void takeDamage(){
+        health --;
+        System.out.println("player damaged / health: " + health);
+        if(health <= 0){
+            die();
+        }
+    }
+    private void die() {
+        dead = true;
+        System.err.println("Player died");
+    }
+    public int getHealth(){ return health;}
     // Getters for future use like collisions
     public float getX() {return position.x;}
 

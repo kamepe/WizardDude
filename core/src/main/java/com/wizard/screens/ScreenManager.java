@@ -1,4 +1,4 @@
-/* This manages all screens in game can be expanded for pause button and stuff currently handels only play and exit butoon. */
+
 package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -26,8 +26,4 @@ public class ScreenManager {
     public static void exit() {
         Gdx.app.exit();
     }
-
-    public static void showStory() {
-        game.setScreen(new StoryScreen(game));
-      }
 }
