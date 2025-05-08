@@ -273,7 +273,7 @@ public class Player {
         System.out.println("player damaged / health: " + health);
         AudioManager.playPlayerDamageSound();
         if(health <= 0){
-            //die();
+            die();
         }
     }
     private void die() {
