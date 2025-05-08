@@ -35,7 +35,6 @@ public class Player {
     private EntityManager entityManager;
     private OrthographicCamera camera;
     private static final float SPELL_COOLDOWN = 0.3f;  // seconds between casts
-    private float timeSinceLastSpell = SPELL_COOLDOWN; //counter
     private int health = 10;
     private float scale = 0.7f;
     private float width;
@@ -43,6 +42,11 @@ public class Player {
     private boolean dead = false;
     private Constants.Direction currentDirection;
 
+    private float fireballCooldownTimer = 0f;
+    private static final float FIREBALL_COOLDOWN = 2.0f;
+
+    private float lightningCooldownTimer = 0f;
+    private static final float LIGHTNING_COOLDOWN = 1.0f;
 
     public Player(World world, float x, float y, EntityManager em, OrthographicCamera cam) {
         this.world = world;
@@ -97,7 +101,8 @@ public class Player {
 
     public void update(float deltaTime){
         position = body.getPosition();
-        timeSinceLastSpell += deltaTime;
+        fireballCooldownTimer = Math.max(0, fireballCooldownTimer - deltaTime);
+        lightningCooldownTimer = Math.max(0, lightningCooldownTimer - deltaTime);
         handleMovement(deltaTime);
         animation.update(deltaTime);
         handleSpellCast(deltaTime);
@@ -146,8 +151,8 @@ public class Player {
         Sprite fireball = new Sprite(fireballSprite);
         Sprite lightning = new Sprite(lightningSprite);
         Vector2 direction = new Vector2(0, 0);
-        if (timeSinceLastSpell < SPELL_COOLDOWN) return;
          if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            if (fireballCooldownTimer > 0.f) return;
         // Get all the variables to initialise a spell
             position = body.getPosition();
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -159,15 +164,16 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            float w = 0.3f, h = 0.3f, speed = 10f;
+            float w = 0.3f, h = 0.3f, speed = 3f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, w, h, speed, fireball, this ));
-            timeSinceLastSpell = 0f;
+            fireballCooldownTimer = FIREBALL_COOLDOWN;
         }
         else if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
         // Get all the variables to initialise a spell
+            if (lightningCooldownTimer > 0.f) return;
             position = body.getPosition();
             Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 mouseWorld  = camera.unproject(mousePos);
@@ -178,12 +184,12 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            float width= 0.4f, height = 0.4f, speed = 10f;
+            float width= 0.5f, height = 0.5f, speed = 5f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, width, height, speed, lightning, this ));
-            timeSinceLastSpell = 0f;
+            lightningCooldownTimer = LIGHTNING_COOLDOWN;
         }
     }
 
@@ -262,4 +268,12 @@ public class Player {
     public float getWidth() {return width;} // make sure updated if fore some reason it changes
 
     public Vector2 getPosition() {return position;}
+
+    public float getCooldownFireTimer(){return fireballCooldownTimer;}
+
+    public float getCooldownFire(){return FIREBALL_COOLDOWN;}
+
+    public float getCooldownLightningTimer(){return lightningCooldownTimer;}
+
+    public float getCooldownLightning(){return LIGHTNING_COOLDOWN;}
 }

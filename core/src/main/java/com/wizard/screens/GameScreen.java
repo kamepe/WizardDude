@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -58,8 +60,10 @@ public class GameScreen extends ScreenAdapter {
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private Sprite[] healthSprites;
+    private ShapeRenderer shapes; // Declare ShapeRenderer instance
     private static final int MAX_HEALTH = 10;
     private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    private Matrix4 identityMatrix = new Matrix4().idt(); // Define identity matrix
     private float unitScale = 1f / Constants.PPM;
 
     // Map dimensions in world units
@@ -85,7 +89,10 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialize shader
         vignetteShader = ShaderManager.getInstance().getVignetteShader();
+        // Initialize ShapeRenderer
+        shapes = new ShapeRenderer();
 
+        // Set input processor to null to prevent menu inputs from affecting the game
         // Set input processor to null to prevent menu inputs from affecting the game
         Gdx.input.setInputProcessor(null);
         // Tile map
@@ -126,6 +133,7 @@ public class GameScreen extends ScreenAdapter {
             );
             Fixture wallFixture = body.createFixture(shape, 1.0f);
             wallFixture.setUserData("wall");
+            ShapeRenderer shapes = new ShapeRenderer();
 
             shape.dispose();
         }
@@ -334,6 +342,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void render(float delta){
+        int screenWidth  = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
         update(delta);
 
         // Clear screen
@@ -365,7 +375,24 @@ public class GameScreen extends ScreenAdapter {
 
         batch.setShader(null);
         debugRenderer.render(world, camera.combined.scl(Constants.PPM));
+        // Render cooldown bars
+        shapes.setProjectionMatrix(uiProj);
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // Fire bar
+        shapes.setColor(Color.DARK_GRAY);
+        shapes.rect(10, Gdx.graphics.getHeight() - 40, 100, 8);
+        float fireFrac = 1 - (player.getCooldownFireTimer() / player.getCooldownFire());
+        shapes.setColor(Color.ORANGE);
+        shapes.rect(10, screenHeight-40, 100 * fireFrac, 8);
 
+        // Lightning bar
+        shapes.setColor(Color.DARK_GRAY);
+        shapes.rect(10, screenHeight-60, 100, 8);
+        float lightFrac = 1 - (player.getCooldownLightningTimer() / player.getCooldownLightning());
+        shapes.setColor(Color.CYAN);
+        shapes.rect(10, screenHeight-60, 100 * lightFrac, 8);
+
+        shapes.end();
         // Render the helth bar and adjust size
         batch.setProjectionMatrix(uiProj);
         batch.begin();
@@ -400,7 +427,8 @@ public class GameScreen extends ScreenAdapter {
 
     public void dispose(){
         debugRenderer.dispose();
-        tiledMap.dispose();
+        vignetteShader.dispose();
+        shapes.dispose(); // Dispose ShapeRenderer
         renderer.dispose();
         player.dispose();
         world.dispose();
