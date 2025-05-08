@@ -61,14 +61,13 @@ public class GameScreen extends ScreenAdapter {
 
     // enemy spawning
     private float enemySpawnTimer = 0;
-    private final float ENEMY_SPAWN_INTERVAL = 8f; // in sec
+    private final float ENEMY_SPAWN_INTERVAL = 6f; // in sec
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private Sprite[] healthSprites;
     private ShapeRenderer shapes; // Declare ShapeRenderer instance
     private static final int MAX_HEALTH = 10;
     private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    private Matrix4 identityMatrix = new Matrix4().idt(); // Define identity matrix
     private float unitScale = 1f / Constants.PPM;
 
     // Map dimensions in world units
@@ -164,7 +163,9 @@ public class GameScreen extends ScreenAdapter {
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.camera.zoom = 0.5f;
 
-        player = new Player(world, 925 / Constants.PPM, 165 / Constants.PPM, entityManager, camera, keyManager);
+        float PLAYER_SPAWN_X = 6.75f;
+        float PLAYER_SPAWN_Y = 2.27f;
+        player = new Player(world, PLAYER_SPAWN_X, PLAYER_SPAWN_Y, entityManager, camera, keyManager);
 
         // Set up player spawn area - initialize it before initializeRooms
         playerSpawnArea = new Rectangle(
@@ -304,13 +305,13 @@ public class GameScreen extends ScreenAdapter {
             for (int i = 0; i < 3; i++) {
                 EnemyType type = (i % 2 == 0) ?
                     EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
-
+    
                 float x = area.x + (float)(Math.random() * area.width);
                 float y = area.y + (float)(Math.random() * area.height);
-
-                // range of safe area on 4 as of now
+    
+                // a no enemy spawn in the 10 units are of the player
                 float distToPlayer = Vector2.dst(x, y, player.getX(), player.getY());
-                if (distToPlayer < 4f) {
+                if (distToPlayer < 7.6f) {
                     continue;
                 }
                 // add enemy
@@ -376,28 +377,49 @@ public class GameScreen extends ScreenAdapter {
 
     // Enemy spawning method
     private void spawnEnemy() {
-        // Randomly select an enemy type
+
+        float playerX = player.getX();
+        float playerY = player.getY();
+        
+        // random type of enemy
         EnemyType type;
         if (Math.random() < 0.5) {
             type = EnemyType.RANGED_WIZARD;
         } else {
             type = EnemyType.MELEE_SKELETON;
         }
-
+        
         // randomly select a spawn area
         Rectangle spawnArea = spawnAreas.get((int)(Math.random() * spawnAreas.size()));
         float x = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float y = spawnArea.y + (float)(Math.random() * spawnArea.height);
-
-        if (playerSpawnArea != null &&
-            (playerSpawnArea.contains(x, y) ||
-                playerSpawnArea.overlaps(new Rectangle(x - 0.5f, y - 0.5f, 1f, 1f)))) {
+        
+        // calculate distance
+        float distToPlayer = Vector2.dst(x, y, playerX, playerY);
+        
+        if (distToPlayer < 7f) {
             return;
         }
 
-        // Create and add the enemy
         Enemy enemy = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), type);
         entityManager.addEnemy(enemy);
+        
+        // the further away a room is the more chance there is to spawn bigger groups of enemies
+        float spawnChance = Math.min(0.7f, distToPlayer / 50f); // Cap at 70% chance
+        
+        int maxAdditional = (int)(distToPlayer / 10f);
+        maxAdditional = Math.min(2, maxAdditional);
+        
+        for (int i = 0; i < maxAdditional; i++) {
+            if (Math.random() < spawnChance) {
+                float offsetX = (float)((Math.random() * 4) - 2); 
+                float offsetY = (float)((Math.random() * 4) - 2);
+                
+                Enemy companionEnemy = new Enemy(world, x + offsetX, y + offsetY, 
+                    entityManager, entityManager.getPlayer(), type);
+                entityManager.addEnemy(companionEnemy);
+            }
+        }
     }
 
     public void render(float delta){
@@ -423,13 +445,20 @@ public class GameScreen extends ScreenAdapter {
         Vector3 playerScreenPos = new Vector3(player.getX() * Constants.PPM, player.getY() * Constants.PPM, 0);
         camera.project(playerScreenPos);
 
-        // Set shader
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean Mac = osName.contains("mac");
+        int macMultiplyer = 1;
+        if (Mac){
+            macMultiplyer = 2;
+        }
+
         ShaderManager.getInstance().updateVignetteShader(
-            playerScreenPos.x * 2,
-            playerScreenPos.y * 2,
-            screenWidth * 2,
-            screenHeight * 2
+            playerScreenPos.x * macMultiplyer,
+            playerScreenPos.y * macMultiplyer,
+            screenWidth * macMultiplyer,
+            screenHeight * macMultiplyer
         );
+
         vignetteShader = ShaderManager.getInstance().getVignetteShader();
 
         // Apply shader to the batch for world rendering
@@ -483,6 +512,7 @@ public class GameScreen extends ScreenAdapter {
         // Draw key UI
         keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 40, 30, 30);
 
+        
         // Draw door interaction prompt if player is near a door
         boolean playerNearDoor = false;
         for (Door door : doors) {
