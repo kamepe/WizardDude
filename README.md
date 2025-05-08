@@ -1,33 +1,35 @@
-# WizardDude
+# WizardDude 
+This is a top down action-adventure game, where the player is a wizzard who is stuck in a dungeon and is attempting to slay the enmies and escape the dungeon.
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+# Starting the project
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+In terminal:
+```bash
+git clone git@github.com:kamepe/WizardDude.git
+cd WizardDude
+```
 
-## Platforms
+Running the game:
+```bash
+./gradlew run
+```
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+# Gameplay
 
-## Gradle
+Move: WASD, for (UP, Right, Left, Down)
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+Cast Fireball: Right mouse button (2 sec cooldown)
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+Cast Lightning: Left mouse button (0.3 sec cooldown)
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+Objective: Survive waves of enemies and defeat bosses to collect the keys and escape the dungeon.
+
+# Project structure
+
+```bash
+WizardDude/
+├── assets/ # All of the assests for the game
+├── core/ # Core game logic, mechenincsm controls and asset handling
+├── lwjgl3/ #  Gradle setup
+├── build.gradle # Build file
+```
