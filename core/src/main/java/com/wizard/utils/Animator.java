@@ -32,13 +32,18 @@ public class Animator {
         Texture texture = new Texture(Gdx.files.internal(path));
 
         // Determine if this is a projectile animation
-        if (path.contains("downn")) {
-            frames = TextureRegion.split(texture, 32, 32)[0];
+        if (path.contains("firebullet")) {
+            TextureRegion fullTexture = new TextureRegion(texture);
+            fullTexture.setRegion(0, 17, 80, 16);
+            frames = new TextureRegion[5]; // 80/16 = 5 frames
+            for (int i = 0; i < 5; i++) {
+                frames[i] = new TextureRegion(fullTexture, i * 16, 0, 16, 16);
+            }
         } else {
             // Default animation handling for player
             frames = TextureRegion.split(texture, 32, 32)[0];
-            delay = 0.1f;
         }
+        delay = 0.1f;
 
         if (invert) {
             for (int i = 0; i < frames.length; i++) {

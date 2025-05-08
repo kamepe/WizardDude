@@ -18,6 +18,7 @@ import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
 import java.util.function.Predicate;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import sun.jvm.hotspot.ui.tree.CStringTreeNodeAdapter;
 
 
 public class Enemy {
@@ -44,6 +45,7 @@ public class Enemy {
     private float detectionRange;
     private float moveSpeed;
     private Sprite attackSprite;
+    private String fire;
     private boolean isRanged;
 
     //added part
@@ -80,8 +82,14 @@ public class Enemy {
         this.attackCooldown = type.getAttackCooldown();
         this.detectionRange = type.getDetectionRange();
         this.moveSpeed = type.getMoveSpeed();
-        this.attackSprite = new Sprite(type.getAttackSprite());
         this.isRanged = type.isRanged();
+        if (isRanged) {
+            this.fire = type.getAttackPath();
+        }
+        else{
+            this.attackSprite = new Sprite(type.getAttackSprite());
+        }
+
 
         TextureRegion sample = down.getKeyFrame(0f);
         width = sample.getRegionWidth() / PPM;
@@ -263,7 +271,7 @@ public class Enemy {
                 new Vector2(direction),
                 0.5f, 0.5f,
                 1.5f,
-                new Sprite(attackSprite),
+                fire,
                 this
             ));
             // play ranged sound
