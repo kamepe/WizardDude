@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -36,9 +37,11 @@ import com.wizard.entities.Boss;
 import com.wizard.entities.Enemy;
 import com.wizard.entities.EnemyType;
 import com.wizard.entities.EntityManager;
+import com.wizard.entities.Door;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.Constants;
+import com.wizard.utils.KeyManager;
 import com.wizard.utils.ShaderManager;
 
 public class GameScreen extends ScreenAdapter {
@@ -82,6 +85,15 @@ public class GameScreen extends ScreenAdapter {
 
     private ShaderProgram vignetteShader;
 
+    // List to store door objects
+    private ArrayList<Door> doors = new ArrayList<>();
+
+    // Font for UI text
+    private BitmapFont font;
+
+    // Key manager for door unlocking system
+    private KeyManager keyManager;
+
     public GameScreen(Main game){
         this.game = game;
         this.world = new World(new Vector2(0, 0), true);
@@ -91,6 +103,14 @@ public class GameScreen extends ScreenAdapter {
         vignetteShader = ShaderManager.getInstance().getVignetteShader();
         // Initialize ShapeRenderer
         shapes = new ShapeRenderer();
+
+        // Initialize font for UI text
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(1.5f);
+
+        // Initialize key manager with 1 initial key
+        keyManager = new KeyManager(1);
 
         // Set input processor to null to prevent menu inputs from affecting the game
         // Set input processor to null to prevent menu inputs from affecting the game
@@ -142,7 +162,7 @@ public class GameScreen extends ScreenAdapter {
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.camera.zoom = 0.5f;
 
-        player = new Player(world, 925 / Constants.PPM, 165 / Constants.PPM, entityManager, camera);
+        player = new Player(world, 925 / Constants.PPM, 165 / Constants.PPM, entityManager, camera, keyManager);
 
         // Set up player spawn area - initialize it before initializeRooms
         playerSpawnArea = new Rectangle(
@@ -176,6 +196,9 @@ public class GameScreen extends ScreenAdapter {
         camera.update(); // these need to be after the world step
         player.update(delta);
         entityManager.updateAll(delta);
+
+        // Update doors
+        updateDoors();
 
         // Enemy spawning logic
         enemySpawnTimer += delta;
@@ -227,6 +250,11 @@ public class GameScreen extends ScreenAdapter {
         MapLayer doorsSmallLayer = tiledMap.getLayers().get("doors_small_col");
         MapLayer doorsMedLayer = tiledMap.getLayers().get("doors_med_col");
         MapLayer doorsLargeLayer = tiledMap.getLayers().get("doors_large_col");
+
+        // Initialize doors
+        initializeDoors(doorsSmallLayer, "doors_small", "doors_small_col");
+        initializeDoors(doorsMedLayer, "doors_med", "doors_med_col");
+        initializeDoors(doorsLargeLayer, "doors_large", "doors_large_col");
 
         // get and set boss rooms
         RectangleMapObject bossMedObj = (RectangleMapObject) bossMedLayer.getObjects().get(0);
@@ -287,6 +315,35 @@ public class GameScreen extends ScreenAdapter {
                 Enemy enemy = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), type);
                 entityManager.addEnemy(enemy);
             }
+        }
+    }
+
+    /**
+     * Initializes door objects from map layers
+     * @param collisionLayer The layer containing door collision objects
+     * @param visualLayerName The name of the layer containing door visuals
+     * @param collisionLayerName The name of the collision layer
+     */
+    private void initializeDoors(MapLayer collisionLayer, String visualLayerName, String collisionLayerName) {
+        if (collisionLayer == null) return;
+
+        MapObjects doorObjects = collisionLayer.getObjects();
+        for (MapObject obj : doorObjects) {
+            if (obj instanceof RectangleMapObject) {
+                RectangleMapObject doorObj = (RectangleMapObject) obj;
+                Door door = new Door(world, tiledMap, doorObj, visualLayerName, collisionLayerName, keyManager);
+                doors.add(door);
+            }
+        }
+    }
+
+    /**
+     * Updates all doors based on player position
+     */
+    private void updateDoors() {
+        Vector2 playerPosition = player.getPosition();
+        for (Door door : doors) {
+            door.update(playerPosition);
         }
     }
 
@@ -413,6 +470,37 @@ public class GameScreen extends ScreenAdapter {
         bar.setSize(desiredWidth, desiredHeight);
         bar.setPosition(10, Gdx.graphics.getHeight() - desiredHeight - 10);
         bar.draw(batch);
+
+        // Draw key UI
+        keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 40, 30, 30);
+
+        // Draw door interaction prompt if player is near a door
+        boolean playerNearDoor = false;
+        for (Door door : doors) {
+            if (door.isPlayerInRange()) {
+                playerNearDoor = true;
+                break;
+            }
+        }
+
+        if (playerNearDoor) {
+            Door nearbyDoor = doors.stream().filter(Door::isPlayerInRange).findFirst().orElse(null);
+            String promptText;
+
+            if (nearbyDoor != null) {
+                if (nearbyDoor.isOpen()) {
+                    promptText = "Press E to Close Door";
+                } else if (nearbyDoor.isLocked() && player.hasKey()) {
+                    promptText = "Press E to Unlock Door (Uses 1 Key)";
+                } else if (nearbyDoor.isLocked() && !player.hasKey()) {
+                    promptText = "Door Locked - Need a Key";
+                } else {
+                    promptText = "Press E to Open Door";
+                }
+                font.draw(batch, promptText, screenWidth / 2 - 150, 50);
+            }
+        }
+
         batch.end();
     }
 
@@ -438,9 +526,21 @@ public class GameScreen extends ScreenAdapter {
         renderer.dispose();
         player.dispose();
         world.dispose();
+        font.dispose(); // Dispose font
         ShaderManager.getInstance().dispose();
+
+        // Dispose doors
+        for (Door door : doors) {
+            door.dispose();
+        }
+
         for (Sprite s : healthSprites) {
             s.getTexture().dispose();
+        }
+
+        // Dispose key manager
+        if (keyManager != null) {
+            keyManager.dispose();
         }
     }
 }

@@ -40,7 +40,8 @@ public class StoryScreen extends ScreenAdapter {
             new Texture(Gdx.files.internal("storyline/story3.png")),
             new Texture(Gdx.files.internal("storyline/story4.png")),
             new Texture(Gdx.files.internal("storyline/story5.png")),
-            new Texture(Gdx.files.internal("storyline/story6.png"))
+            new Texture(Gdx.files.internal("storyline/story6.png")),
+            new Texture(Gdx.files.internal("storyline/Controls.png"))
         };
 
         // Story texts
@@ -50,7 +51,8 @@ public class StoryScreen extends ScreenAdapter {
             "blahahahahahahaha",
             "blahahahahahaahhahaha",
             "blahahahahahahahahahahahahahahahahahahahahaha",
-            "spawneennenenene where aim I???S?S?S?S?"
+            "spawneennenenene where aim I???S?S?S?S?",
+            "..."
         };
 
         // Setup fonts
