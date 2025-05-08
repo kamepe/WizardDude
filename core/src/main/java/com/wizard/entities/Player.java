@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
@@ -256,6 +257,7 @@ public class Player {
     private void die() {
         dead = true;
         System.err.println("Player died");
+        ScreenManager.diedscreen();
     }
     public int getHealth(){ return health;}
     // Getters for future use like collisions
