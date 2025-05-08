@@ -1,60 +1,66 @@
-
 package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.wizard.Main;
 import com.wizard.utils.AudioManager;
 
-
 public class ScreenManager {
     private static Main game;
+    private static GameScreen currentGame; 
 
     public static void initialize(Main gameInstance) {
         game = gameInstance;
     }
 
     public static void showMenu() {
-        // Stop game music and play menu music
         AudioManager.stopBackgroundMusic();
         AudioManager.playMenuMusic();
-        // Stop walking sound when returning to menu
         AudioManager.stopWalkingSound();
-        // Play button click sound when transitioning to menu
         AudioManager.playButtonClickSound();
         game.setScreen(new MenuScreen(game));
     }
 
     public static void showGame() {
-        // Stop menu music and play game music
+        if (currentGame == null) {
+            currentGame = new GameScreen(game);
+        }
         AudioManager.stopMenuMusic();
         AudioManager.playBackgroundMusic();
-        // Play button click sound when starting the game
         AudioManager.playButtonClickSound();
-        game.setScreen(new GameScreen(game));
+        game.setScreen(currentGame);
     }
 
     public static void exit() {
         AudioManager.dispose();
         Gdx.app.exit();
     }
-    // storyline
+
     public static void showStory() {
         game.setScreen(new StoryScreen(game));
-      }
-
-    //gameover
+    }
 
     public static void showGameOver() {
-
         AudioManager.stopBackgroundMusic();
-
         game.setScreen(new gameoverscreen(game));
     }
 
     public static void diedscreen() {
-
         AudioManager.stopBackgroundMusic();
         AudioManager.stopWalkingSound();
         game.setScreen(new diedscreen(game));
     }
+
+    // pause screen
+    public static void showPause() {
+        game.setScreen(new pausescreen(game));
+    }
+
+    public static void resumeGame() {
+        if (currentGame != null) {
+            AudioManager.playBackgroundMusic();
+            game.setScreen(currentGame);
+        }
+    }
 }
+
+

@@ -3,6 +3,7 @@ package com.wizard.screens;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -40,6 +41,7 @@ import com.wizard.entities.EntityManager;
 import com.wizard.entities.Door;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
+import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import com.wizard.utils.KeyManager;
 import com.wizard.utils.ShaderManager;
@@ -399,6 +401,13 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void render(float delta){
+        // esc screen
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        AudioManager.playButtonClickSound();
+        ScreenManager.showPause();
+        return;  
+    }
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
         update(delta);
@@ -500,6 +509,9 @@ public class GameScreen extends ScreenAdapter {
                 font.draw(batch, promptText, screenWidth / 2 - 150, 50);
             }
         }
+
+       
+        
 
         batch.end();
     }
