@@ -18,8 +18,8 @@ import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
 import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
-import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
+import com.wizard.utils.KeyManager;
 
 //InderStuff
 public class Player {
@@ -185,7 +185,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, w, h, speed, "characters/wizard/downn.png", this ));/// just get a proper firebal sprite
+            startY, aim, w, h, speed, "spells/fireball.png", this ));/// just get a proper firebal sprite
             fireballCooldownTimer = FIREBALL_COOLDOWN;
 
             AudioManager.playPlayerFireballSound();
@@ -283,6 +283,18 @@ public class Player {
         ScreenManager.diedscreen();
     }
     public int getHealth(){ return health;}
+
+    /**
+     * Heals the player by the specified amount.
+     * Health will not exceed the maximum health (10).
+     *
+     * @param amount The amount of health to restore
+     */
+    public void heal(int amount) {
+        health = Math.min(10, health + amount);
+        System.out.println("Player healed / health: " + health);
+    }
+
     // Getters for future use like collisions
     public float getX() {return position.x;}
 
