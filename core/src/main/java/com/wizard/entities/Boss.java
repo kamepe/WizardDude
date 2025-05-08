@@ -16,10 +16,9 @@ public class Boss extends Enemy {
     public Boss(World world, float x, float y,
                 EntityManager em, Player player,
                 EnemyType type) {
-        // must call super first!
+        // must call super first
         super(world, x, y, em, player, type);
 
-        // load boss’s projectile graphic once
         Texture fireballTex = new Texture(
             Gdx.files.internal("spells/fireball.png")
         );
@@ -47,7 +46,7 @@ public class Boss extends Enemy {
         }
     }
 
-    // five‐shot cone
+    // five‐shot cone fire
     private void attackSpray(Vector2 dir) {
         float base = dir.angleDeg();
         for (int i = -2; i <= 2; i++) {
@@ -55,14 +54,14 @@ public class Boss extends Enemy {
             spawnSpellFire(d);
         }
     }
-
+    // attack in a circle ice
     private void attackCircle(Vector2 dir) {
         for (int i = 0; i < 360; i += 3) {
             Vector2 d = new Vector2(1, 0).setAngleDeg(i * 10);
             spawnSpellIce(d);
         }
     }
-
+    // rapid fire lightning
     private void attackRapid(Vector2 dir) {
         float interval = 0.1f;
         for (int i = 0; i < 10; i++) {
