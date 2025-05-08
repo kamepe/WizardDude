@@ -168,7 +168,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, w, h, speed, fireball, this ));
+            startY, aim, w, h, speed, "characters/wizard/downn.png", this ));/// just get a proper firebal sprite
             fireballCooldownTimer = FIREBALL_COOLDOWN;
         }
         else if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
