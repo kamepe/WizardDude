@@ -19,16 +19,27 @@ public class Animator {
     private float width;
     private float height;
     private boolean playOnce; // true if it's something like a death sprite and the last frame has to be looped
+    private boolean isProjectile;
 
     public Animator(Player player, Body body, String path, boolean invert) {
         this.player = player;
         this.body = body;
         this.invert = invert;
+        this.isProjectile = (player == null); // If player is null, we assume it's a projectile
+
         duration = 0.0f;
         current = 0;
         Texture texture = new Texture(Gdx.files.internal(path));
-        frames = TextureRegion.split(texture, 32, 32)[0];
-        delay = 0.1f;
+
+        // Determine if this is a projectile animation
+        if (path.contains("downn")) {
+            frames = TextureRegion.split(texture, 32, 32)[0];
+        } else {
+            // Default animation handling for player
+            frames = TextureRegion.split(texture, 32, 32)[0];
+            delay = 0.1f;
+        }
+
         if (invert) {
             for (int i = 0; i < frames.length; i++) {
                 frames[i].flip(true, false);  // flip horizontally
@@ -48,25 +59,38 @@ public class Animator {
 
     // Rendering the animation
     public void render(SpriteBatch batch) {
-    TextureRegion frame = frames[current];
+        TextureRegion frame = frames[current];
 
-    // true pixel size of this frame
-    float frameWpx = frame.getRegionWidth();
-    float frameHpx = frame.getRegionHeight();
+        // true pixel size of this frame
+        float frameWpx = frame.getRegionWidth();
+        float frameHpx = frame.getRegionHeight();
 
-    // body center in screen pixels
-    float centerX = player.getX() * Constants.PPM;
-    float centerY = player.getY() * Constants.PPM;
+        if (isProjectile) {
+            // For projectiles, we use the body position directly
+            float centerX = body.getPosition().x * Constants.PPM;
+            float centerY = body.getPosition().y * Constants.PPM;
 
-    // draw bottom-left such that the frame is centered
-    batch.draw(frame,
-        centerX - frameWpx * 0.5f,
-        centerY - frameHpx * 0.5f,
-        frameWpx,
-        frameHpx
-    );
-}
+            // Draw bottom-left such that the frame is centered
+            batch.draw(frame,
+                centerX - frameWpx * 0.5f,
+                centerY - frameHpx * 0.5f,
+                frameWpx,
+                frameHpx
+            );
+        } else {
+            // For player animations, use the player position
+            float centerX = player.getX() * Constants.PPM;
+            float centerY = player.getY() * Constants.PPM;
 
+            // Draw bottom-left such that the frame is centered
+            batch.draw(frame,
+                centerX - frameWpx * 0.5f,
+                centerY - frameHpx * 0.5f,
+                frameWpx,
+                frameHpx
+            );
+        }
+    }
 
     public void step() {
         duration -= delay;

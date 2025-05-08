@@ -35,7 +35,7 @@ public class diedscreen extends ScreenAdapter {
                     } else if (keycode == Input.Keys.E) {
                         AudioManager.playButtonClickSound();
                         ScreenManager.showMenu();
-                        
+
                     }
                 }
                 return true;

@@ -342,7 +342,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void render(float delta){
-        int screenWidth  = Gdx.graphics.getWidth();
+        int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
         update(delta);
 
@@ -353,9 +353,18 @@ public class GameScreen extends ScreenAdapter {
         // Update camera
         updateCamera();
 
+        // calculate players position in screen coordinates
+        Vector3 playerScreenPos = new Vector3(player.getX() * Constants.PPM, player.getY() * Constants.PPM, 0);
+        camera.project(playerScreenPos);
+
         // Set shader
-        vignetteShader.bind();
-        vignetteShader.setUniformf("u_resolution", Gdx.graphics.getWidth()*2, Gdx.graphics.getHeight()*2);
+        ShaderManager.getInstance().updateVignetteShader(
+            playerScreenPos.x * 2,
+            playerScreenPos.y * 2,
+            screenWidth * 2,
+            screenHeight * 2
+        );
+        vignetteShader = ShaderManager.getInstance().getVignetteShader();
 
         // Apply shader to the batch for world rendering
         batch.setShader(vignetteShader);
@@ -398,15 +407,13 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
         int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);
         Sprite bar = healthSprites[hp];
-        float desiredWidth  = 150f;
+        float desiredWidth = 150f;
         float desiredHeight = 20f;
 
         bar.setSize(desiredWidth, desiredHeight);
         bar.setPosition(10, Gdx.graphics.getHeight() - desiredHeight - 10);
         bar.draw(batch);
         batch.end();
-
-        batch.setShader(vignetteShader);
     }
 
     public TiledMap getMap(){
@@ -427,12 +434,11 @@ public class GameScreen extends ScreenAdapter {
 
     public void dispose(){
         debugRenderer.dispose();
-        vignetteShader.dispose();
         shapes.dispose(); // Dispose ShapeRenderer
         renderer.dispose();
         player.dispose();
         world.dispose();
-        vignetteShader.dispose();
+        ShaderManager.getInstance().dispose();
         for (Sprite s : healthSprites) {
             s.getTexture().dispose();
         }
