@@ -20,6 +20,7 @@ import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
+import com.wizard.utils.KeyManager;
 
 //InderStuff
 public class Player {
@@ -285,6 +286,18 @@ public class Player {
         ScreenManager.diedscreen();
     }
     public int getHealth(){ return health;}
+
+    /**
+     * Heals the player by the specified amount.
+     * Health will not exceed the maximum health (10).
+     *
+     * @param amount The amount of health to restore
+     */
+    public void heal(int amount) {
+        health = Math.min(10, health + amount);
+        System.out.println("Player healed / health: " + health);
+    }
+
     // Getters for future use like collisions
     public float getX() {return position.x;}
 

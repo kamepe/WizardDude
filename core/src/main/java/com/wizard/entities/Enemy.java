@@ -50,7 +50,12 @@ public class Enemy {
 
     //added part
     protected void onDeath() {
-
+        // Heal the player when an enemy is killed
+        Player player = entityManager.getPlayer();
+        if (player != null) {
+            player.heal(1); // Regular enemies restore 1 health
+            System.out.println("Enemy killed! Player healed 1 health.");
+        }
     }
 
     // state
