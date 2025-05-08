@@ -142,7 +142,7 @@ public class GameScreen extends ScreenAdapter {
         this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.camera.zoom = 0.5f;
 
-        player = new Player(world, Gdx.graphics.getWidth() / 2f / Constants.PPM, Gdx.graphics.getHeight() / 2f / Constants.PPM, entityManager, camera);
+        player = new Player(world, 925 / Constants.PPM, 165 / Constants.PPM, entityManager, camera);
 
         // Set up player spawn area - initialize it before initializeRooms
         playerSpawnArea = new Rectangle(

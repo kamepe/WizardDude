@@ -11,9 +11,13 @@ public class AudioManager {
 
     // Sound effects
     private static Sound playerSpellSound;
+    private static Sound playerFireballSound;
     private static Sound playerDamageSound;
     private static Sound enemyShootSound;
+    private static Sound enemyMeleeAttackSound;
+    private static Sound enemyRangedAttackSound;
     private static Sound bossShootSound;
+    private static Sound bossSpellCastSound;
     private static Sound enemyDeathSound;
     private static Sound walkingSound;
     private static Sound buttonClickSound;
@@ -78,13 +82,25 @@ public class AudioManager {
         // Initialize player sounds
         if (playerSpellSound == null) {
             try {
-                if (Gdx.files.internal("audio/player_spell.mp3").exists()) {
-                    playerSpellSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_spell.mp3"));
+                if (Gdx.files.internal("audio/player_spell_cast.mp3").exists()) {
+                    playerSpellSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_spell_cast2.mp3"));
                 } else {
-                    System.out.println("Warning: audio/player_spell.mp3 not found");
+                    System.out.println("Warning: audio/player_spell_cast.mp3 not found");
                 }
             } catch (Exception e) {
-                System.out.println("Error loading player_spell.mp3: " + e.getMessage());
+                System.out.println("Error loading player_spell_cast.mp3: " + e.getMessage());
+            }
+        }
+
+        if (playerFireballSound == null) {
+            try {
+                if (Gdx.files.internal("audio/player_fireball.mp3").exists()) {
+                    playerFireballSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_fireball.mp3"));
+                } else {
+                    System.out.println("Warning: audio/player_fireball.mp3 not found");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading player_fireball.mp3: " + e.getMessage());
             }
         }
 
@@ -113,12 +129,36 @@ public class AudioManager {
             }
         }
 
-        //speak storyline sound 
+        if (enemyMeleeAttackSound == null) {
+            try {
+                if (Gdx.files.internal("audio/enemy_mele_attack.mp3").exists()) {
+                    enemyMeleeAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_mele_attack.mp3"));
+                } else {
+                    System.out.println("Warning: audio/enemy_mele_attack.mp3 not found");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading enemy_mele_attack.mp3: " + e.getMessage());
+            }
+        }
+
+        if (enemyRangedAttackSound == null) {
+            try {
+                if (Gdx.files.internal("audio/enemy_ranged_attack.mp3").exists()) {
+                    enemyRangedAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_ranged_attack.mp3"));
+                } else {
+                    System.out.println("Warning: audio/enemy_ranged_attack.mp3 not found");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading enemy_ranged_attack.mp3: " + e.getMessage());
+            }
+        }
+
+        //speak storyline sound
 
         if (speaksound == null) {
             try {
                 if (Gdx.files.internal("audio/speaksound.mp3").exists()) {
-                    speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.ogg"));
+                    speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.mp3"));
                 } else {
                     System.out.println("Warning: audio/speaksound.mp3 not found");
                 }
@@ -136,6 +176,18 @@ public class AudioManager {
                 }
             } catch (Exception e) {
                 System.out.println("Error loading boss_shoot.wav: " + e.getMessage());
+            }
+        }
+
+        if (bossSpellCastSound == null) {
+            try {
+                if (Gdx.files.internal("audio/boss_spell_cast.mp3").exists()) {
+                    bossSpellCastSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_spell_cast.mp3"));
+                } else {
+                    System.out.println("Warning: audio/boss_spell_cast.mp3 not found");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading boss_spell_cast.mp3: " + e.getMessage());
             }
         }
 
@@ -234,6 +286,12 @@ public class AudioManager {
         }
     }
 
+    public static void playPlayerFireballSound() {
+        if (playerFireballSound != null) {
+            playerFireballSound.play(0.3f);
+        }
+    }
+
     public static void playPlayerDamageSound() {
         if (playerDamageSound != null) {
             playerDamageSound.play(0.5f);
@@ -246,9 +304,27 @@ public class AudioManager {
         }
     }
 
+    public static void playEnemyMeleeAttackSound() {
+        if (enemyMeleeAttackSound != null) {
+            enemyMeleeAttackSound.play(0.5f);
+        }
+    }
+
+    public static void playEnemyRangedAttackSound() {
+        if (enemyRangedAttackSound != null) {
+            enemyRangedAttackSound.play(0.2f);
+        }
+    }
+
     public static void playBossShootSound() {
         if (bossShootSound != null) {
             bossShootSound.play(0.5f);
+        }
+    }
+
+    public static void playBossSpellCastSound() {
+        if (bossSpellCastSound != null) {
+            bossSpellCastSound.play(0.5f);
         }
     }
 
@@ -278,7 +354,7 @@ public class AudioManager {
             buttonClickSound.play(0.5f);
         }
     }
-    
+
 
     // Dispose of resources when no longer needed
     public static void dispose() {
@@ -297,6 +373,10 @@ public class AudioManager {
             playerSpellSound.dispose();
             playerSpellSound = null;
         }
+        if (playerFireballSound != null) {
+            playerFireballSound.dispose();
+            playerFireballSound = null;
+        }
         if (playerDamageSound != null) {
             playerDamageSound.dispose();
             playerDamageSound = null;
@@ -305,9 +385,21 @@ public class AudioManager {
             enemyShootSound.dispose();
             enemyShootSound = null;
         }
+        if (enemyMeleeAttackSound != null) {
+            enemyMeleeAttackSound.dispose();
+            enemyMeleeAttackSound = null;
+        }
+        if (enemyRangedAttackSound != null) {
+            enemyRangedAttackSound.dispose();
+            enemyRangedAttackSound = null;
+        }
         if (bossShootSound != null) {
             bossShootSound.dispose();
             bossShootSound = null;
+        }
+        if (bossSpellCastSound != null) {
+            bossSpellCastSound.dispose();
+            bossSpellCastSound = null;
         }
         if (enemyDeathSound != null) {
             enemyDeathSound.dispose();

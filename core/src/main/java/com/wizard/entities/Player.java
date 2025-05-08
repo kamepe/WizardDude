@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
+import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import static com.wizard.utils.Constants.PPM;
 
@@ -144,6 +145,13 @@ public class Player {
             setDirection(direction);
         }
 
+        // Play walking sound if player is moving, stop it if player is not moving
+        if (direction.x != 0 || direction.y != 0) {
+            AudioManager.playWalkingSound();
+        } else {
+            AudioManager.stopWalkingSound();
+        }
+
         body.setLinearVelocity(direction);
     }
 
@@ -171,6 +179,8 @@ public class Player {
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, w, h, speed, fireball, this ));
             fireballCooldownTimer = FIREBALL_COOLDOWN;
+
+            AudioManager.playPlayerFireballSound();
         }
         else if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
         // Get all the variables to initialise a spell
@@ -191,7 +201,10 @@ public class Player {
             entityManager.addToActiveSpells(new Spells(world, startX,
             startY, aim, width, height, speed, lightning, this ));
             lightningCooldownTimer = LIGHTNING_COOLDOWN;
-        }
+
+             AudioManager.playPlayerSpellSound();
+
+         }
     }
 
     private void setDirection(Vector2 direction){
@@ -250,6 +263,7 @@ public class Player {
     public void takeDamage(){
         health --;
         System.out.println("player damaged / health: " + health);
+        AudioManager.playPlayerDamageSound();
         if(health <= 0){
             die();
         }
@@ -257,6 +271,7 @@ public class Player {
     private void die() {
         dead = true;
         System.err.println("Player died");
+        AudioManager.stopWalkingSound();
         ScreenManager.diedscreen();
     }
     public int getHealth(){ return health;}

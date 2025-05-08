@@ -46,9 +46,9 @@ public class Enemy {
     private Sprite attackSprite;
     private boolean isRanged;
 
-    //added part 
+    //added part
     protected void onDeath() {
-        
+
     }
 
     // state
@@ -261,6 +261,8 @@ public class Enemy {
                 new Sprite(attackSprite),
                 this
             ));
+            // play ranged sound
+            AudioManager.playEnemyRangedAttackSound();
         } else {
 
             if (Vector2.dst(position.x, position.y, player.getX(), player.getY()) < 0.5f) {
@@ -277,6 +279,8 @@ public class Enemy {
                 new Sprite(attackSprite),
                 this
             );
+            // play melee sound
+            AudioManager.playEnemyMeleeAttackSound();
 
             // the visual indicator of the attack shouldnt disappear in 0.1 sec
             melee.setVisualOnly(true);

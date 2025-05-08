@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.wizard.utils.AudioManager;
 
 public class Boss extends Enemy {
     private final Sprite fireballSprite;
@@ -45,6 +46,7 @@ public class Boss extends Enemy {
             case 1: attackCircle(direction); break;
             default:attackRapid(direction);  break;
         }
+        AudioManager.playBossSpellCastSound();
     }
 
     // five‐shot cone fire
@@ -66,7 +68,7 @@ public class Boss extends Enemy {
     private void attackRapid(Vector2 dir) {
         float interval = 0.1f;
         for (int i = 0; i < 10; i++) {
-           final Vector2 d = new Vector2(dir);  
+           final Vector2 d = new Vector2(dir);
            Timer.schedule(new Timer.Task(){
         @Override
         public void run() {
@@ -84,7 +86,7 @@ public class Boss extends Enemy {
             dir,
             0.5f,
             0.5f,
-            0.8f,     
+            0.8f,
             new Sprite(fireballSprite),
             this
         ));
@@ -97,7 +99,7 @@ public class Boss extends Enemy {
             dir,
             0.2f,
             0.2f,
-            1.0f,     
+            1.0f,
             new Sprite(lightningSprite),
             this
         ));
@@ -110,13 +112,13 @@ public class Boss extends Enemy {
             dir,
             0.6f,
             0.6f,
-            0.3f,     
+            0.3f,
             new Sprite(icegSprite),
             this
         ));
     }
     // death
-    
+
     public void onDeath() {
         super.onDeath();
         Timer.schedule(new Timer.Task() {
