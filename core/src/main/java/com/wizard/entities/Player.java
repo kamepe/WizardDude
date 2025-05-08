@@ -18,8 +18,8 @@ import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
 import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
-import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
+import com.wizard.utils.KeyManager;
 
 //InderStuff
 public class Player {
@@ -185,7 +185,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, w, h, speed, "characters/wizard/downn.png", this ));/// just get a proper firebal sprite
+            startY, aim, w, h, speed, "spells/fireball.png", this ));/// just get a proper firebal sprite
             fireballCooldownTimer = FIREBALL_COOLDOWN;
 
             AudioManager.playPlayerFireballSound();
