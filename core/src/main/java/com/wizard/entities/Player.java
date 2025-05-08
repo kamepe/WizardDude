@@ -20,6 +20,7 @@ import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
 import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
+import com.wizard.utils.KeyManager;
 
 //InderStuff
 public class Player {
@@ -183,9 +184,12 @@ public class Player {
 
             float w = 0.3f, h = 0.3f, speed = 3f;
 
-
+            // Create a fireball using the Sprite constructor instead of the path string
+            Sprite fireballAnimSprite = new Sprite(fireballTexture);
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, w, h, speed, "characters/wizard/downn.png", this ));/// just get a proper firebal sprite
+                startY, aim, w, h, speed, "spells/firebullet.png", this));
+            // spells/firebullet.png
+             // characters/wizard/downn.png
             fireballCooldownTimer = FIREBALL_COOLDOWN;
 
             AudioManager.playPlayerFireballSound();
@@ -200,14 +204,13 @@ public class Player {
             float startY = position.y;
             float targetX = mouseWorld.x / PPM;
             float targetY = mouseWorld.y / PPM;
-            Vector2 aim = new Vector2(targetX, targetY)
-            .sub(body.getPosition().x, body.getPosition().y);
+            Vector2 aim = new Vector2(targetX, targetY).sub(body.getPosition().x, body.getPosition().y);
 
             float width= 0.5f, height = 0.5f, speed = 5f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, width, height, speed, lightning, this ));
+            startY, aim, width, height, speed, lightningSprite, this ));
             lightningCooldownTimer = LIGHTNING_COOLDOWN;
 
              AudioManager.playPlayerSpellSound();
@@ -283,6 +286,18 @@ public class Player {
         ScreenManager.diedscreen();
     }
     public int getHealth(){ return health;}
+
+    /**
+     * Heals the player by the specified amount.
+     * Health will not exceed the maximum health (10).
+     *
+     * @param amount The amount of health to restore
+     */
+    public void heal(int amount) {
+        health = Math.min(10, health + amount);
+        System.out.println("Player healed / health: " + health);
+    }
+
     // Getters for future use like collisions
     public float getX() {return position.x;}
 
