@@ -19,7 +19,9 @@ public class ShaderManager {
     }
 
     public static ShaderManager getInstance() {
-        instance = new ShaderManager();
+        if (instance == null) {
+            instance = new ShaderManager();
+        }
         return instance;
     }
 
@@ -27,7 +29,14 @@ public class ShaderManager {
         return vignetteShader;
     }
 
+    public void updateVignetteShader(float playerX, float playerY, float screenWidth, float screenHeight) {
+        vignetteShader.bind();
+        vignetteShader.setUniformf("u_resolution", screenWidth, screenHeight);
+        vignetteShader.setUniformf("u_playerPosition", playerX, playerY);
+    }
+
     public void dispose() {
+        vignetteShader.dispose();
         instance = null;
     }
 }
