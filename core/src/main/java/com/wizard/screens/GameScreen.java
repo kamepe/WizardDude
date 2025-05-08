@@ -61,7 +61,7 @@ public class GameScreen extends ScreenAdapter {
 
     // enemy spawning
     private float enemySpawnTimer = 0;
-    private final float ENEMY_SPAWN_INTERVAL = 6f; // in sec
+    private final float ENEMY_SPAWN_INTERVAL = 3f; // in sec
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private Sprite[] healthSprites;
@@ -300,15 +300,15 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void prespawnEnemies() {
-        // spawn 3 enemies in each locked room
+        // spawn 5 enemies in each locked room
         for (Rectangle area : spawnAreas) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 5; i++) {
                 EnemyType type = (i % 2 == 0) ?
                     EnemyType.RANGED_WIZARD : EnemyType.MELEE_SKELETON;
-    
+
                 float x = area.x + (float)(Math.random() * area.width);
                 float y = area.y + (float)(Math.random() * area.height);
-    
+
                 // a no enemy spawn in the 10 units are of the player
                 float distToPlayer = Vector2.dst(x, y, player.getX(), player.getY());
                 if (distToPlayer < 7.6f) {
@@ -380,7 +380,7 @@ public class GameScreen extends ScreenAdapter {
 
         float playerX = player.getX();
         float playerY = player.getY();
-        
+
         // random type of enemy
         EnemyType type;
         if (Math.random() < 0.5) {
@@ -388,34 +388,34 @@ public class GameScreen extends ScreenAdapter {
         } else {
             type = EnemyType.MELEE_SKELETON;
         }
-        
+
         // randomly select a spawn area
         Rectangle spawnArea = spawnAreas.get((int)(Math.random() * spawnAreas.size()));
         float x = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float y = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        
+
         // calculate distance
         float distToPlayer = Vector2.dst(x, y, playerX, playerY);
-        
+
         if (distToPlayer < 7f) {
             return;
         }
 
         Enemy enemy = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), type);
         entityManager.addEnemy(enemy);
-        
+
         // the further away a room is the more chance there is to spawn bigger groups of enemies
         float spawnChance = Math.min(0.7f, distToPlayer / 50f); // Cap at 70% chance
-        
-        int maxAdditional = (int)(distToPlayer / 10f);
-        maxAdditional = Math.min(2, maxAdditional);
-        
+
+        int maxAdditional = (int)(distToPlayer / 8f);
+        maxAdditional = Math.min(4, maxAdditional);
+
         for (int i = 0; i < maxAdditional; i++) {
             if (Math.random() < spawnChance) {
-                float offsetX = (float)((Math.random() * 4) - 2); 
+                float offsetX = (float)((Math.random() * 4) - 2);
                 float offsetY = (float)((Math.random() * 4) - 2);
-                
-                Enemy companionEnemy = new Enemy(world, x + offsetX, y + offsetY, 
+
+                Enemy companionEnemy = new Enemy(world, x + offsetX, y + offsetY,
                     entityManager, entityManager.getPlayer(), type);
                 entityManager.addEnemy(companionEnemy);
             }
@@ -428,7 +428,7 @@ public class GameScreen extends ScreenAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         AudioManager.playButtonClickSound();
         ScreenManager.showPause();
-        return;  
+        return;
     }
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
@@ -512,7 +512,7 @@ public class GameScreen extends ScreenAdapter {
         // Draw key UI
         keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 40, 30, 30);
 
-        
+
         // Draw door interaction prompt if player is near a door
         boolean playerNearDoor = false;
         for (Door door : doors) {
@@ -540,8 +540,8 @@ public class GameScreen extends ScreenAdapter {
             }
         }
 
-       
-        
+
+
 
         batch.end();
     }
