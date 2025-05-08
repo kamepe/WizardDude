@@ -118,7 +118,14 @@ public class Enemy {
         PolygonShape shape = new PolygonShape();
         // Adjust hitbox size based on sprite size ratio
         float sizeRatio = type.getSpriteSize() / 32f;
-        shape.setAsBox(width/4 * sizeRatio, height/4 * sizeRatio); // Scale hitbox for larger sprites
+
+        // Apply a smaller hitbox for boss entities
+        if (this instanceof Boss) {
+            // Reduce the hitbox size for bosses by 30%
+            shape.setAsBox(width/4 * sizeRatio * 0.5f, height/4 * sizeRatio * 0.7f);
+        } else {
+            shape.setAsBox(width/4 * sizeRatio, height/4 * sizeRatio); // Scale hitbox for regular enemies
+        }
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
