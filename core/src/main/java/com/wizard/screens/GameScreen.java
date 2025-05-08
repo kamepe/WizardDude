@@ -433,6 +433,7 @@ public class GameScreen extends ScreenAdapter {
         player.dispose();
         world.dispose();
         vignetteShader.dispose();
+        ShaderManager.getInstance().dispose();
         for (Sprite s : healthSprites) {
             s.getTexture().dispose();
         }

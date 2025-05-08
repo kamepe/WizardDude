@@ -26,4 +26,8 @@ public class ShaderManager {
     public ShaderProgram getVignetteShader() {
         return vignetteShader;
     }
+
+    public void dispose() {
+        instance = null;
+    }
 }
