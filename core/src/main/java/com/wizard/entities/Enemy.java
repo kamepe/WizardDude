@@ -46,6 +46,11 @@ public class Enemy {
     private Sprite attackSprite;
     private boolean isRanged;
 
+    //added part 
+    protected void onDeath() {
+        
+    }
+
     // state
     private boolean dead = false;
     private float timeSinceLastAttack = 0f;
@@ -286,6 +291,7 @@ public class Enemy {
         System.out.println("enemy damaged / health: " + health);
         if (health <= 0) {
             die();
+            onDeath();
         }
     }
 

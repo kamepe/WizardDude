@@ -17,6 +17,7 @@ public class AudioManager {
     private static Sound enemyDeathSound;
     private static Sound walkingSound;
     private static Sound buttonClickSound;
+    private static Sound speaksound;
 
     // Track walking sound state
     private static long walkingSoundId = -1;
@@ -112,6 +113,20 @@ public class AudioManager {
             }
         }
 
+        //speak storyline sound 
+
+        if (speaksound == null) {
+            try {
+                if (Gdx.files.internal("audio/speaksound.mp3").exists()) {
+                    speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.ogg"));
+                } else {
+                    System.out.println("Warning: audio/speaksound.mp3 not found");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading speaksound.mp3: " + e.getMessage());
+            }
+        }
+
         if (bossShootSound == null) {
             try {
                 if (Gdx.files.internal("audio/boss_shoot.wav").exists()) {
@@ -204,6 +219,14 @@ public class AudioManager {
         }
     }
 
+    //Speak sound storyline
+
+    public static void playSpeakSound() {
+        if (speaksound != null) {
+            speaksound.play(0.5f);  // adjust volume as desired
+        }
+    }
+
     // Play sound effects
     public static void playPlayerSpellSound() {
         if (playerSpellSound != null) {
@@ -255,6 +278,7 @@ public class AudioManager {
             buttonClickSound.play(0.5f);
         }
     }
+    
 
     // Dispose of resources when no longer needed
     public static void dispose() {
@@ -300,6 +324,11 @@ public class AudioManager {
         if (buttonClickSound != null) {
             buttonClickSound.dispose();
             buttonClickSound = null;
+        }
+
+        if (speaksound != null) {
+            speaksound.dispose();
+            speaksound = null;
         }
     }
 }

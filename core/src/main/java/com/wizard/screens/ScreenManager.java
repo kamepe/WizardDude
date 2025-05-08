@@ -41,4 +41,20 @@ public class ScreenManager {
     public static void showStory() {
         game.setScreen(new StoryScreen(game));
       }
+    
+    //gameover 
+
+    public static void showGameOver() {
+      
+        AudioManager.stopBackgroundMusic();
+        
+        game.setScreen(new gameoverscreen(game));
+    }
+
+    public static void diedscreen() {
+      
+        AudioManager.stopBackgroundMusic();
+        
+        game.setScreen(new diedscreen(game));
+    }
 }

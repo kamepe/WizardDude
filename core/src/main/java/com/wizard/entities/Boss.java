@@ -1,5 +1,6 @@
 package com.wizard.entities;
 import com.badlogic.gdx.utils.Timer;
+import com.wizard.screens.ScreenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -113,5 +114,16 @@ public class Boss extends Enemy {
             new Sprite(icegSprite),
             this
         ));
+    }
+    // death
+    
+    public void onDeath() {
+        super.onDeath();
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                ScreenManager.showGameOver();
+            }
+        }, 0.5f);
     }
 }

@@ -7,9 +7,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.wizard.Main;
+import com.wizard.utils.AudioManager;
 
 public class StoryScreen extends ScreenAdapter {
     private final SpriteBatch batch;
@@ -22,11 +25,15 @@ public class StoryScreen extends ScreenAdapter {
     private static final float CHARS_PER_SEC = 30f;
 
     public StoryScreen(Main game) {
+        // Load all sound effects
+        AudioManager.initSoundEffects();
+
+        // Initialize batch and camera
         batch = game.getBatch();
         cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(cam.viewportWidth/2, cam.viewportHeight/2, 0);
+        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
 
-        // All the background art
+        // Load backgrounds
         backgrounds = new Texture[]{
             new Texture(Gdx.files.internal("storyline/story1.png")),
             new Texture(Gdx.files.internal("storyline/story2.png")),
@@ -36,25 +43,33 @@ public class StoryScreen extends ScreenAdapter {
             new Texture(Gdx.files.internal("storyline/story6.png"))
         };
 
-        // diaglogs for the screen
+        // Story texts
         texts = new String[]{
             "balahahahahahahaha",
-            "blahahahahahahaha", "blahahahahahahaha", "blahahahahahaahhahaha", "blahahahahahahahahahahahahahahahahahahahahaha", "spawneennenenene where aim I???S?S?S?S?"
+            "blahahahahahahaha",
+            "blahahahahahahaha",
+            "blahahahahahaahhahaha",
+            "blahahahahahahahahahahahahahahahahahahahahaha",
+            "spawneennenenene where aim I???S?S?S?S?"
         };
 
+        // Setup fonts
         font = new BitmapFont();
         font.getData().setScale(1.2f);
         instrFont = new BitmapFont();
         instrFont.getData().setScale(1f);
 
-        // moving to next slides
-        Gdx.input.setInputProcessor(new InputAdapter(){
-            @Override public boolean touchDown(int x, int y, int p, int b) {
+        // Handle taps: advance text/page and play sound
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int x, int y, int pointer, int button) {
+                // Play speak sound on every tap
+                AudioManager.playSpeakSound();
+
+                // Reveal text or advance page
                 if (chars < texts[page].length()) {
-                    // finish current page instantly
                     chars = texts[page].length();
                 } else {
-                    // next page or start game
                     page++;
                     if (page >= texts.length) {
                         ScreenManager.showGame();
@@ -70,52 +85,36 @@ public class StoryScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        
-
+        // Update character reveal timer
         time += delta;
         if (chars < texts[page].length()) {
-            chars = Math.min(texts[page].length(),
-                             (int)(time * CHARS_PER_SEC));
+            chars = Math.min(texts[page].length(), (int)(time * CHARS_PER_SEC));
         }
 
+        // Clear and set camera
         cam.update();
         batch.setProjectionMatrix(cam.combined);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        // draw the current background
+        // Draw background
+        batch.draw(backgrounds[page], 0, 0, cam.viewportWidth, cam.viewportHeight);
 
-        batch.draw(backgrounds[page],
-                   0, 0,
-                   cam.viewportWidth,
-                   cam.viewportHeight);
-
-        // draw the typed‐out story text at the bottom
-
-        float margin = 60f; // for text (tap) thing space between them 
+        // Prepare story text
+        float margin = 60f;
         String toShow = texts[page].substring(0, chars);
         GlyphLayout layout = new GlyphLayout(
-            font,
-            toShow,
-            Color.WHITE,
-            cam.viewportWidth - 2*margin,
-            Align.left,
-            true
+            font, toShow, Color.WHITE, cam.viewportWidth - 2 * margin,
+            Align.left, true
         );
-       
+        font.draw(batch, layout, margin, margin + layout.height);
 
-        font.draw(batch,
-                  layout,
-                  margin,
-                  margin + layout.height);
-
-       
-
+        // Draw instruction once text fully shown
         if (chars >= texts[page].length()) {
             String instr = "(tap anywhere to continue)";
             GlyphLayout il = new GlyphLayout(instrFont, instr);
-            float ix = (cam.viewportWidth - il.width)/2f;
-            float iy = margin + (-40f);  // positioning
+            float ix = (cam.viewportWidth - il.width) / 2f;
+            float iy = margin - 40f;
             instrFont.draw(batch, il, ix, iy);
         }
         batch.end();
@@ -123,8 +122,12 @@ public class StoryScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        for (Texture t : backgrounds) t.dispose();
+        // Dispose textures and fonts
+        for (Texture t : backgrounds) {
+            t.dispose();
+        }
         font.dispose();
         instrFont.dispose();
     }
 }
+
