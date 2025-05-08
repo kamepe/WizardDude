@@ -37,4 +37,8 @@ public class ScreenManager {
         AudioManager.dispose();
         Gdx.app.exit();
     }
+    // storyline
+    public static void showStory() {
+        game.setScreen(new StoryScreen(game));
+      }
 }
