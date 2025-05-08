@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.AudioManager;
+import com.wizard.utils.KeyManager;
 
 public class Boss extends Enemy {
     private final Sprite fireballSprite;
@@ -121,11 +122,12 @@ public class Boss extends Enemy {
 
     public void onDeath() {
         super.onDeath();
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                ScreenManager.showGameOver();
-            }
-        }, 0.5f);
+
+        // Give the player a key when the boss is killed
+        Player player = getEntityManager().getPlayer();
+        if (player != null) {
+            player.addKey();
+            System.out.println("Boss killed! Player received a key.");
+        }
     }
 }

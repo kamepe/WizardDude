@@ -361,4 +361,13 @@ public class Enemy {
     protected World getWorld() {
         return world;
     }
+
+    /**
+     * Gets the type of this enemy.
+     *
+     * @return The enemy type
+     */
+    public EnemyType getType() {
+        return type;
+    }
 }

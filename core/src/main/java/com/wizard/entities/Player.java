@@ -18,6 +18,7 @@ import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
 import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
+import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
 
 //InderStuff
@@ -50,10 +51,17 @@ public class Player {
     private float lightningCooldownTimer = 0f;
     private static final float LIGHTNING_COOLDOWN = 1.0f;
 
+    private KeyManager keyManager;
+
     public Player(World world, float x, float y, EntityManager em, OrthographicCamera cam) {
+        this(world, x, y, em, cam, null);
+    }
+
+    public Player(World world, float x, float y, EntityManager em, OrthographicCamera cam, KeyManager keyManager) {
         this.world = world;
         this.entityManager = em;
         this.camera = cam;
+        this.keyManager = keyManager;
         texture = new Texture(Gdx.files.internal("characters/wizard/right.png"));
         sprite = new Sprite(texture);// need to actually add a texture
         fireballTexture = new Texture(Gdx.files.internal("spells/fireball.png"));
@@ -265,7 +273,7 @@ public class Player {
         System.out.println("player damaged / health: " + health);
         AudioManager.playPlayerDamageSound();
         if(health <= 0){
-            die();
+            //die();
         }
     }
     private void die() {
@@ -293,4 +301,49 @@ public class Player {
     public float getCooldownLightningTimer(){return lightningCooldownTimer;}
 
     public float getCooldownLightning(){return LIGHTNING_COOLDOWN;}
+
+    /**
+     * Checks if the player has any keys.
+     *
+     * @return true if the player has at least one key, false otherwise
+     */
+    public boolean hasKey() {
+        return keyManager != null && keyManager.hasKey();
+    }
+
+    /**
+     * Gets the number of keys the player has.
+     *
+     * @return The number of keys, or 0 if the key manager is not set
+     */
+    public int getKeyCount() {
+        return keyManager != null ? keyManager.getAvailableKeys() : 0;
+    }
+
+    /**
+     * Adds a key to the player's inventory.
+     */
+    public void addKey() {
+        if (keyManager != null) {
+            keyManager.addKey();
+        }
+    }
+
+    /**
+     * Sets the key manager for this player.
+     *
+     * @param keyManager The key manager to use
+     */
+    public void setKeyManager(KeyManager keyManager) {
+        this.keyManager = keyManager;
+    }
+
+    /**
+     * Gets the key manager for this player.
+     *
+     * @return The key manager, or null if not set
+     */
+    public KeyManager getKeyManager() {
+        return keyManager;
+    }
 }
