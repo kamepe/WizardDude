@@ -240,7 +240,7 @@ public class Enemy {
         }
     }
 
-    private void attackPlayer(Vector2 direction) {
+    protected void attackPlayer(Vector2 direction) {
         if (isRanged && !hasLineOfSight()) {
             return;
         }
@@ -344,5 +344,11 @@ public class Enemy {
     }
     public void forceActivate() {
         this.activated = true;
+    }
+    protected EntityManager getEntityManager() {
+        return entityManager;
+    }
+    protected World getWorld() {
+        return world;
     }
 }

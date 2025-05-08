@@ -30,6 +30,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
+import com.wizard.entities.Boss;
 import com.wizard.entities.Enemy;
 import com.wizard.entities.EnemyType;
 import com.wizard.entities.EntityManager;
@@ -286,21 +287,21 @@ public class GameScreen extends ScreenAdapter {
         if (!smallBossSpawned) {
             float x = bossSmallRoom.x + bossSmallRoom.width / 2;
             float y = bossSmallRoom.y + bossSmallRoom.height / 2;
-            Enemy smallBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.SMALL_BOSS);
+            Boss smallBoss = new Boss(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.SMALL_BOSS);
             entityManager.addEnemy(smallBoss);
             smallBossSpawned = true;
         }
         if (!mediumBossSpawned) {
             float x = bossMedRoom.x + bossMedRoom.width / 2;
             float y = bossMedRoom.y + bossMedRoom.height / 2;
-            Enemy mediumBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.MEDIUM_BOSS);
+            Boss mediumBoss = new Boss(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.MEDIUM_BOSS);
             entityManager.addEnemy(mediumBoss);
             mediumBossSpawned = true;
         }
         if (!largeBossSpawned) {
             float x = bossLargeRoom.x + bossLargeRoom.width / 2;
             float y = bossLargeRoom.y + bossLargeRoom.height / 2;
-            Enemy largeBoss = new Enemy(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.LARGE_BOSS);
+            Boss largeBoss = new Boss(world, x, y, entityManager, entityManager.getPlayer(), EnemyType.LARGE_BOSS);
             entityManager.addEnemy(largeBoss);
             largeBossSpawned = true;
         }
