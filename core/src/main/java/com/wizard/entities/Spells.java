@@ -64,7 +64,7 @@ public class Spells {
         // Shapes
         PolygonShape shape = new PolygonShape();
         // Reduce hitbox by 80% (multiply width and height by 0.2)
-        shape.setAsBox(width * 0.2f, height * 0.2f);
+        shape.setAsBox(width * 0.15f, height * 0.15f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

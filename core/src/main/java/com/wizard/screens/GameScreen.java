@@ -59,14 +59,13 @@ public class GameScreen extends ScreenAdapter {
 
     // enemy spawning
     private float enemySpawnTimer = 0;
-    private final float ENEMY_SPAWN_INTERVAL = 3f; // in sec
+    private final float ENEMY_SPAWN_INTERVAL = 6f; // in sec
     private final Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private Sprite[] healthSprites;
     private ShapeRenderer shapes; // Declare ShapeRenderer instance
     private static final int MAX_HEALTH = 10;
     private Matrix4 uiProj = new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    private Matrix4 identityMatrix = new Matrix4().idt(); // Define identity matrix
     private float unitScale = 1f / Constants.PPM;
 
     // Map dimensions in world units
@@ -168,9 +167,9 @@ public class GameScreen extends ScreenAdapter {
 
         // Set up player spawn area - initialize it before initializeRooms
         playerSpawnArea = new Rectangle(
-            6.75f - 10f,
-            2.27f - 10f,
-            20f, 20f);    // 10f radius
+            player.getX() - 3,
+            player.getY() - 3,
+            6, 6); // 6x6 area around player starting position
 
         // Set the player in the entity manager
         entityManager.setPlayer(player);
@@ -437,13 +436,20 @@ public class GameScreen extends ScreenAdapter {
         Vector3 playerScreenPos = new Vector3(player.getX() * Constants.PPM, player.getY() * Constants.PPM, 0);
         camera.project(playerScreenPos);
 
-        // Set shader
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean Mac = osName.contains("mac");
+        int macMultiplyer = 1;
+        if (Mac){
+            macMultiplyer = 2;
+        }
+
         ShaderManager.getInstance().updateVignetteShader(
-            playerScreenPos.x * 2,
-            playerScreenPos.y * 2,
-            screenWidth * 2,
-            screenHeight * 2
+            playerScreenPos.x * macMultiplyer,
+            playerScreenPos.y * macMultiplyer,
+            screenWidth * macMultiplyer,
+            screenHeight * macMultiplyer
         );
+
         vignetteShader = ShaderManager.getInstance().getVignetteShader();
 
         // Apply shader to the batch for world rendering
@@ -497,9 +503,6 @@ public class GameScreen extends ScreenAdapter {
         // Draw key UI
         keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 40, 30, 30);
 
-        //-------------------------------------------------------------------------------------------
-        String coordText = String.format("X: %.2f Y: %.2f", player.getX(), player.getY());
-        font.draw(batch, coordText, 10, Gdx.graphics.getHeight() - desiredHeight - 70);
         
         // Draw door interaction prompt if player is near a door
         boolean playerNearDoor = false;

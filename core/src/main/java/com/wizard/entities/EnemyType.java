@@ -43,13 +43,13 @@ public class EnemyType {
     //------------------------------------------------------------------------------------------------------------------------------------------------------
     public static EnemyType RANGED_WIZARD = new EnemyType(
         "e_up.png", "e_down.png", "e_left.png", "e_right.png",
-        2, 1.2f, 2.0f, 0.5f,
+        1, 1.2f, 2.0f, 0.5f,
         "spells/fireball.png", true
     );
    
     public static EnemyType MELEE_SKELETON = new EnemyType(
         "skeleton_up.png", "skeleton_down.png", "skeleton_left.png", "skeleton_right.png",
-        3, 1.2f, 0.2f, 0.45f,
+        2, 1.2f, 0.2f, 0.45f,
         "weapons/spiky.png", false
     );
     //------------------------------------------------------------------------------------------------------------------------------------------------------
