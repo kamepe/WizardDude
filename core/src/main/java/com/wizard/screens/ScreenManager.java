@@ -27,7 +27,7 @@ public class ScreenManager {
         AudioManager.stopMenuMusic();
         AudioManager.playBackgroundMusic();
         AudioManager.playButtonClickSound();
-        game.setScreen(currentGame);
+        game.setScreen(new GameScreen(game));
     }
 
     public static void exit() {
