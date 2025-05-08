@@ -109,7 +109,7 @@ public class Enemy {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f; // can be adjusted later
+        fixtureDef.density = 0.5f; // can be adjusted later
 
 
         Filter filter = new Filter();
