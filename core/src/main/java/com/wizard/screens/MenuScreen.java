@@ -59,7 +59,8 @@ public class MenuScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                // Ignore input during intro screen
+                
+
                 if (introScreenTimer < INTRO_SCREEN_DURATION) return true;
 
                 Vector3 worldTouch = new Vector3(screenX, screenY, 0);
@@ -96,7 +97,7 @@ public class MenuScreen extends ScreenAdapter {
                        cam.viewportWidth,
                        cam.viewportHeight);
         } else {
-            // Draw animated menu
+            
             stateTime += delta;
             int idx = (int)(stateTime / FRAME_DURATION) % bgFrames.length;
             Texture bg = bgFrames[idx];
