@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
 public class AudioManager {
+
     // Background music
     private static Music backgroundMusic;
     private static Music menuMusic;
@@ -61,7 +62,7 @@ public class AudioManager {
             if (Gdx.files.internal(musicFile).exists()) {
                 menuMusic = Gdx.audio.newMusic(Gdx.files.internal(musicFile));
                 menuMusic.setLooping(true);
-                menuMusic.setVolume(0.5f); // Set volume to 50%
+                menuMusic.setVolume(0.5f);
 
                 // Add completion listener to ensure music loops even if it ends unexpectedly
                 menuMusic.setOnCompletionListener(music -> {
@@ -81,151 +82,55 @@ public class AudioManager {
     public static void initSoundEffects() {
         // Initialize player sounds
         if (playerSpellSound == null) {
-            try {
-                if (Gdx.files.internal("audio/player_spell_cast.mp3").exists()) {
-                    playerSpellSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_spell_cast2.mp3"));
-                } else {
-                    System.out.println("Warning: audio/player_spell_cast.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading player_spell_cast.mp3: " + e.getMessage());
-            }
+            playerSpellSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_spell_cast2.mp3"));
         }
 
         if (playerFireballSound == null) {
-            try {
-                if (Gdx.files.internal("audio/player_fireball.mp3").exists()) {
-                    playerFireballSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_fireball.mp3"));
-                } else {
-                    System.out.println("Warning: audio/player_fireball.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading player_fireball.mp3: " + e.getMessage());
-            }
+            playerFireballSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_fireball.mp3"));
         }
 
         if (playerDamageSound == null) {
-            try {
-                if (Gdx.files.internal("audio/player_damage.mp3").exists()) {
-                    playerDamageSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_damage.mp3"));
-                } else {
-                    System.out.println("Warning: audio/player_damage.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading player_damage.mp3: " + e.getMessage());
-            }
+            playerDamageSound = Gdx.audio.newSound(Gdx.files.internal("audio/player_damage.mp3"));
         }
 
         // Initialize enemy sounds
         if (enemyShootSound == null) {
-            try {
-                if (Gdx.files.internal("audio/enemy_shoot.wav").exists()) {
-                    enemyShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_shoot.wav"));
-                } else {
-                    System.out.println("Warning: audio/enemy_shoot.wav not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading enemy_shoot.wav: " + e.getMessage());
-            }
+            enemyShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_shoot.wav"));
         }
 
         if (enemyMeleeAttackSound == null) {
-            try {
-                if (Gdx.files.internal("audio/enemy_mele_attack.mp3").exists()) {
-                    enemyMeleeAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_mele_attack.mp3"));
-                } else {
-                    System.out.println("Warning: audio/enemy_mele_attack.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading enemy_mele_attack.mp3: " + e.getMessage());
-            }
+            enemyMeleeAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_mele_attack.mp3"));
         }
 
         if (enemyRangedAttackSound == null) {
-            try {
-                if (Gdx.files.internal("audio/enemy_ranged_attack.mp3").exists()) {
-                    enemyRangedAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_ranged_attack.mp3"));
-                } else {
-                    System.out.println("Warning: audio/enemy_ranged_attack.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading enemy_ranged_attack.mp3: " + e.getMessage());
-            }
+            enemyRangedAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_ranged_attack.mp3"));
         }
 
         //speak storyline sound
 
         if (speaksound == null) {
-            try {
-                if (Gdx.files.internal("audio/speaksound.mp3").exists()) {
-                    speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.mp3"));
-                } else {
-                    System.out.println("Warning: audio/speaksound.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading speaksound.mp3: " + e.getMessage());
-            }
+            speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.mp3"));
         }
 
         if (bossShootSound == null) {
-            try {
-                if (Gdx.files.internal("audio/boss_shoot.wav").exists()) {
-                    bossShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_shoot.wav"));
-                } else {
-                    System.out.println("Warning: audio/boss_shoot.wav not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading boss_shoot.wav: " + e.getMessage());
-            }
+            bossShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_shoot.wav"));
         }
 
         if (bossSpellCastSound == null) {
-            try {
-                if (Gdx.files.internal("audio/boss_spell_cast.mp3").exists()) {
-                    bossSpellCastSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_spell_cast.mp3"));
-                } else {
-                    System.out.println("Warning: audio/boss_spell_cast.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading boss_spell_cast.mp3: " + e.getMessage());
-            }
+            bossSpellCastSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_spell_cast.mp3"));
         }
 
         if (enemyDeathSound == null) {
-            try {
-                if (Gdx.files.internal("audio/enemy_death.mp3").exists()) {
-                    enemyDeathSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_death.mp3"));
-                } else {
-                    System.out.println("Warning: audio/enemy_death.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading enemy_death.mp3: " + e.getMessage());
-            }
+            enemyDeathSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_death.mp3"));
         }
 
         // Initialize UI and movement sounds
         if (walkingSound == null) {
-            try {
-                if (Gdx.files.internal("audio/walking.mp3").exists()) {
-                    walkingSound = Gdx.audio.newSound(Gdx.files.internal("audio/walking.mp3"));
-                } else {
-                    System.out.println("Warning: audio/walking.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading walking.mp3: " + e.getMessage());
-            }
+            walkingSound = Gdx.audio.newSound(Gdx.files.internal("audio/walking.mp3"));
         }
 
         if (buttonClickSound == null) {
-            try {
-                if (Gdx.files.internal("audio/button_click.mp3").exists()) {
-                    buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("audio/button_click.mp3"));
-                } else {
-                    System.out.println("Warning: audio/button_click.mp3 not found");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading button_click.mp3: " + e.getMessage());
-            }
+            buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("audio/button_click.mp3"));
         }
     }
 
@@ -275,7 +180,7 @@ public class AudioManager {
 
     public static void playSpeakSound() {
         if (speaksound != null) {
-            speaksound.play(0.5f);  // adjust volume as desired
+            speaksound.play(0.5f);
         }
     }
 
@@ -356,7 +261,6 @@ public class AudioManager {
     }
 
 
-    // Dispose of resources when no longer needed
     public static void dispose() {
         // Dispose music resources
         if (backgroundMusic != null) {
