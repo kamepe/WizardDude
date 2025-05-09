@@ -180,7 +180,7 @@ public class Player {
             Vector2 aim = new Vector2(targetX, targetY)
             .sub(body.getPosition().x, body.getPosition().y);
 
-            float w = 0.3f, h = 0.3f, speed = 3f;
+            float w = 0.3f, h = 0.3f, speed = 1.5f;
 
             entityManager.addToActiveSpells(new Spells(world, startX,
                 startY, aim, w, h, speed, "spells/firebullet.png", this));
@@ -200,7 +200,7 @@ public class Player {
             float targetY = mouseWorld.y / PPM;
             Vector2 aim = new Vector2(targetX, targetY).sub(body.getPosition().x, body.getPosition().y);
 
-            float width= 0.5f, height = 0.5f, speed = 5f;
+            float width= 0.5f, height = 0.5f, speed = 2.5f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
