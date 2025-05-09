@@ -32,11 +32,11 @@ public class Animator {
         Texture texture = new Texture(Gdx.files.internal(path));
 
         // Determine if this is a projectile animation
-        if (path.contains("firebullet")) {
+        if (path.contains("firebullet") && invert) {
             TextureRegion fullTexture = new TextureRegion(texture);
-            fullTexture.setRegion(0, 17, 80, 16);
-            frames = new TextureRegion[5];
-            for (int i = 0; i < 5; i++) {
+            fullTexture.setRegion(0, 49, 80, 16);
+            frames = new TextureRegion[4];
+            for (int i = 0; i < 4; i++) {
                 frames[i] = new TextureRegion(fullTexture, i * 16, 0, 16, 16);
             }
         } else if (path.contains("ball")) {
@@ -45,6 +45,13 @@ public class Animator {
             frames = new TextureRegion[1];
             for (int i = 0; i < 1; i++) {
                 frames[i] = new TextureRegion(fullTexture, i * 64, 0, 64, 64);
+            }
+        } else if (path.contains("firebullet") ) {
+            TextureRegion fullTexture = new TextureRegion(texture);
+            fullTexture.setRegion(0, 17, 80, 16);
+            frames = new TextureRegion[5];
+            for (int i = 0; i < 5; i++) {
+                frames[i] = new TextureRegion(fullTexture, i * 16, 0, 16, 16);
             }
         } else {
             // Default animation handling for player

@@ -54,6 +54,25 @@ public class Spells {
         this.animator = new Animator(null, body, animationPath, false);
     }
 
+    public Spells(World world, float startX, float startY, Vector2 rawDir, float width, float height, float speed, String animationPath, Object own, boolean isBoss) {
+        this.world = world;
+        velocity = new Vector2(rawDir);
+        velocity.nor();
+        velocity.scl(speed);
+
+        this.createBody(startX, startY, width, height);
+        this.owner = own;
+        this.useAnimation = true;
+        this.animationPath = animationPath;
+
+        // Create animator with the specified animation path
+        if (isBoss){
+            this.animator = new Animator(null, body, animationPath, true);
+        }else {
+            this.animator = new Animator(null, body, animationPath, false);
+        }
+    }
+
     private void createBody(float x, float y, float width, float height) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
