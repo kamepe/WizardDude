@@ -18,7 +18,6 @@ import com.wizard.screens.ScreenManager;
 import com.wizard.utils.Animator;
 import com.wizard.utils.AudioManager;
 import com.wizard.utils.Constants;
-import com.wizard.utils.KeyManager;
 import static com.wizard.utils.Constants.PPM;
 import com.wizard.utils.KeyManager;
 
@@ -200,7 +199,7 @@ public class Player {
             float targetY = mouseWorld.y / PPM;
             Vector2 aim = new Vector2(targetX, targetY).sub(body.getPosition().x, body.getPosition().y);
 
-            float width= 0.5f, height = 0.5f, speed = 2.5f;
+            float width= 0.5f, height = 0.5f, speed = 1f;
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
