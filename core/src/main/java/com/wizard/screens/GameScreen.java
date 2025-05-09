@@ -435,28 +435,34 @@ public class GameScreen extends ScreenAdapter {
         update(delta);
         viewport.apply(true);
         updateCamera();
+        int pixelW = Gdx.graphics.getBackBufferWidth();
+        int pixelH = Gdx.graphics.getBackBufferHeight();
+
+        // world→screen projection
+        Vector3 playerScreen = new Vector3(
+            player.getX() * Constants.PPM,
+            player.getY() * Constants.PPM,
+            0
+        );
+        camera.project(
+            playerScreen,
+            viewport.getScreenX(),
+            viewport.getScreenY(),
+            viewport.getScreenWidth(),
+            viewport.getScreenHeight()
+        );
+
+        // update shader
+        ShaderManager.getInstance().updateVignetteShader(
+            playerScreen.x,
+            playerScreen.y,
+            pixelW,
+            pixelH
+        );
         // Clear screen
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
-        // calculate players position in screen coordinates
-        Vector3 playerScreenPos = new Vector3(player.getX() * Constants.PPM, player.getY() * Constants.PPM, 0);
-        camera.project(playerScreenPos);
-
-        String osName = System.getProperty("os.name").toLowerCase();
-        boolean Mac = osName.contains("mac");
-        int macMultiplyer = 1;
-        if (Mac){
-            macMultiplyer = 2;
-        }
-
-        ShaderManager.getInstance().updateVignetteShader(
-            playerScreenPos.x * macMultiplyer,
-            playerScreenPos.y * macMultiplyer,
-            screenWidth * macMultiplyer,
-            screenHeight * macMultiplyer
-        );
 
         vignetteShader = ShaderManager.getInstance().getVignetteShader();
 
@@ -505,6 +511,7 @@ public class GameScreen extends ScreenAdapter {
         shapes.setColor(Color.CYAN);
         shapes.rect(10, sh - 60, 100 * lightFrac, 8);
         shapes.end();
+
         // Render the helth bar and adjust size
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.setProjectionMatrix(uiProj);
