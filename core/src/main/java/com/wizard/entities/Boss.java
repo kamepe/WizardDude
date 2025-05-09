@@ -122,7 +122,7 @@ public class Boss extends Enemy {
     // death
 
     public void onDeath() {
-       
+
         // Give the player a key and heal them more when the boss is killed
         Player player = getEntityManager().getPlayer();
         if (player != null) {
@@ -130,10 +130,10 @@ public class Boss extends Enemy {
             player.heal(3); // Bosses restore 3 health (more than regular enemies)
             bosskilled += 1;
             System.out.println("Boss killed! Player received a key and healed 3 health.");
-
-            if (bosskilled >= 3) { 
-                ScreenManager.showGameOver();   
-                System.out.println("Boss killed:" + bosskilled);         
+            System.out.println("Boss killed:" + bosskilled);
+            if (bosskilled >= 3) {
+                ScreenManager.showGameOver();
+                System.out.println("Boss killed:" + bosskilled);
             }
         }
     }
