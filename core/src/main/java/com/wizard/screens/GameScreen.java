@@ -35,10 +35,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Boss;
+import com.wizard.entities.Door;
 import com.wizard.entities.Enemy;
 import com.wizard.entities.EnemyType;
 import com.wizard.entities.EntityManager;
-import com.wizard.entities.Door;
 import com.wizard.entities.GameContactListener;
 import com.wizard.entities.Player;
 import com.wizard.utils.AudioManager;
@@ -551,7 +551,12 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void resize(int width, int height){
+        camera.viewportWidth  = width;
+        camera.viewportHeight = height;
         camera.update();
+
+        // UI projection
+        uiProj.setToOrtho2D(0, 0, width, height);
     }
 
     public void pause(){
