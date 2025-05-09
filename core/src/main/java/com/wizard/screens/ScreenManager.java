@@ -2,6 +2,7 @@ package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.wizard.Main;
+import com.wizard.entities.Boss;
 import com.wizard.utils.AudioManager;
 
 public class ScreenManager {
@@ -27,6 +28,7 @@ public class ScreenManager {
         AudioManager.stopMenuMusic();
         AudioManager.playBackgroundMusic();
         AudioManager.playButtonClickSound();
+        Boss.resetBossKillCount();
         game.setScreen(new GameScreen(game));
     }
 
