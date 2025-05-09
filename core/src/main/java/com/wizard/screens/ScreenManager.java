@@ -28,7 +28,7 @@ public class ScreenManager {
         AudioManager.stopMenuMusic();
         AudioManager.playBackgroundMusic();
         AudioManager.playButtonClickSound();
-        Boss.resetBossKillCount();
+       
         game.setScreen(new GameScreen(game));
     }
 
