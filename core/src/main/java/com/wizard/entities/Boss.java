@@ -15,6 +15,7 @@ public class Boss extends Enemy {
     private final Sprite lightningSprite;
     private final Sprite icegSprite;
     private World world;
+    private int bosskilled = 0;
 
     public Boss(World world, float x, float y,
                 EntityManager em, Player player,
@@ -121,14 +122,19 @@ public class Boss extends Enemy {
     // death
 
     public void onDeath() {
-        // Don't call super.onDeath() here to avoid the regular enemy healing
-
+       
         // Give the player a key and heal them more when the boss is killed
         Player player = getEntityManager().getPlayer();
         if (player != null) {
             player.addKey();
             player.heal(3); // Bosses restore 3 health (more than regular enemies)
+            bosskilled += 1;
             System.out.println("Boss killed! Player received a key and healed 3 health.");
+
+            if (bosskilled >= 3) { 
+                ScreenManager.showGameOver();   
+                System.out.println("Boss killed:" + bosskilled);         
+            }
         }
     }
 }
