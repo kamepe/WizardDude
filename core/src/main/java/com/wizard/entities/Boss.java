@@ -11,7 +11,7 @@ import com.wizard.utils.AudioManager;
 import com.wizard.utils.KeyManager;
 
 public class Boss extends Enemy {
-    // Add boss kill counter
+    
     private static int bossKillCount = 0;
     private static final int TOTAL_BOSSES = 3;
     
@@ -54,7 +54,7 @@ public class Boss extends Enemy {
         AudioManager.playBossSpellCastSound();
     }
 
-    // five-shot cone fire
+    
     private void attackSpray(Vector2 dir) {
         float base = dir.angleDeg();
         for (int i = -2; i <= 2; i++) {
@@ -63,7 +63,7 @@ public class Boss extends Enemy {
         }
     }
     
-    // attack in a circle ice
+   
     private void attackCircle(Vector2 dir) {
         for (int i = 0; i < 360; i += 3) {
             Vector2 d = new Vector2(1, 0).setAngleDeg(i * 10);
@@ -71,7 +71,7 @@ public class Boss extends Enemy {
         }
     }
     
-    // rapid fire lightning
+   
     private void attackRapid(Vector2 dir) {
         float interval = 0.1f;
         for (int i = 0; i < 10; i++) {
@@ -127,31 +127,30 @@ public class Boss extends Enemy {
         ));
     }
     
-    // death
+    
     @Override
     public void onDeath() {
         super.onDeath();
 
-        // Give the player a key when the boss is killed
+       
         Player player = getEntityManager().getPlayer();
         if (player != null) {
             player.addKey();
             
-            // Increment boss kill counter
-            bossKillCount++;
-            System.out.println("Boss killed! Player received a key. " + 
-                               bossKillCount + "/" + TOTAL_BOSSES + " bosses defeated.");
             
-            // Check if all bosses are defeated
+            bossKillCount++;
+            
+            
+           
             if (bossKillCount >= TOTAL_BOSSES) {
-                System.out.println("All bosses defeated! Game complete!");
-                // Use a slight delay to show game over screen so the player can see the last boss die
+                
+                
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
                         ScreenManager.showGameOver();
                     }
-                }, 1.5f); // 1.5 second delay
+                }, 1.5f); 
             }
         }
     }
