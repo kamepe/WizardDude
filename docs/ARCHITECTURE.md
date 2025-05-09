@@ -12,7 +12,7 @@ _WizardDude_ is a 2D top-down action game built with LibGDX.  Its core responsib
 
 
 ## 2. High-Level Module Structure
-
+```bash
 root
 ├── core
 │ ├── src
@@ -23,6 +23,8 @@ root
 ├── assets # .tmx, textures, fonts, sounds
 └── docs
 └── ARCHITECTURE.md # <-- you are here
+
+```
 ---
 ## 3. Main Components
 
