@@ -1,6 +1,7 @@
 package com.wizard.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -88,6 +89,11 @@ public class StoryScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        // Check for 'm' key press to toggle mute
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            AudioManager.toggleMute();
+        }
+
         // Update character reveal timer
         time += delta;
         if (chars < texts[page].length()) {
@@ -133,4 +139,3 @@ public class StoryScreen extends ScreenAdapter {
         instrFont.dispose();
     }
 }
-

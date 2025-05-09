@@ -32,7 +32,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Boss;
@@ -85,7 +85,7 @@ public class GameScreen extends ScreenAdapter {
     private boolean largeBossSpawned = false;
     private Rectangle playerSpawnArea; // New field for player's spawn area
     private static final float VIRTUAL_WIDTH  = 400f;
-    private static final float VIRTUAL_HEIGHT = 200f; 
+    private static final float VIRTUAL_HEIGHT = 200f;
     // Removed duplicate declaration of viewport
 
     private ShaderProgram vignetteShader;
@@ -164,7 +164,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
-        viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+        viewport = new FillViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 
         float PLAYER_SPAWN_X = 6.75f;
         float PLAYER_SPAWN_Y = 2.27f;
@@ -322,12 +322,7 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
-    /**
-     * Initializes door objects from map layers
-     * @param collisionLayer The layer containing door collision objects
-     * @param visualLayerName The name of the layer containing door visuals
-     * @param collisionLayerName The name of the collision layer
-     */
+
     private void initializeDoors(MapLayer collisionLayer, String visualLayerName, String collisionLayerName) {
         if (collisionLayer == null) return;
 
@@ -341,9 +336,6 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
-    /**
-     * Updates all doors based on player position
-     */
     private void updateDoors() {
         Vector2 playerPosition = player.getPosition();
         for (Door door : doors) {
@@ -427,10 +419,15 @@ public class GameScreen extends ScreenAdapter {
         // esc screen
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        AudioManager.playButtonClickSound();
-        ScreenManager.showPause();
-        return;
-    }
+            AudioManager.playButtonClickSound();
+            ScreenManager.showPause();
+            return;
+        }
+
+        // Toggle mute when 'm' key is pressed
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            AudioManager.toggleMute();
+        }
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
         update(delta);

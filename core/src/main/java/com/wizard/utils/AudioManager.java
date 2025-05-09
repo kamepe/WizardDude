@@ -9,6 +9,9 @@ public class AudioManager {
     // Background music
     private static Music backgroundMusic;
     private static Music menuMusic;
+    private static boolean isMuted = false;
+    private static float savedBackgroundVolume = 0.2f;
+    private static float savedMenuVolume = 0.5f;
 
     // Sound effects
     private static Sound playerSpellSound;
@@ -254,6 +257,48 @@ public class AudioManager {
         }
     }
 
+
+    // Toggle mute state for all music
+    public static void toggleMute() {
+        if (isMuted) {
+            unmuteMusic();
+        } else {
+            muteMusic();
+        }
+    }
+
+    // Mute all music
+    public static void muteMusic() {
+        if (!isMuted) {
+            if (backgroundMusic != null) {
+                savedBackgroundVolume = backgroundMusic.getVolume();
+                backgroundMusic.setVolume(0);
+            }
+            if (menuMusic != null) {
+                savedMenuVolume = menuMusic.getVolume();
+                menuMusic.setVolume(0);
+            }
+            isMuted = true;
+        }
+    }
+
+    // Unmute all music
+    public static void unmuteMusic() {
+        if (isMuted) {
+            if (backgroundMusic != null) {
+                backgroundMusic.setVolume(savedBackgroundVolume);
+            }
+            if (menuMusic != null) {
+                menuMusic.setVolume(savedMenuVolume);
+            }
+            isMuted = false;
+        }
+    }
+
+    // Check if music is muted
+    public static boolean isMuted() {
+        return isMuted;
+    }
 
     public static void dispose() {
         // Dispose music resources

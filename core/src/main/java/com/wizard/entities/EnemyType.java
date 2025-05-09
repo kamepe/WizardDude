@@ -58,21 +58,21 @@ public class EnemyType {
     // the 3 bosses for the 3 rooms
     public static EnemyType SMALL_BOSS = new EnemyType(
         "SkeletonKingUpWalk.png", "SkeletonKingDownWalk.png", "SkeletonKingLeftWalk.png", "SkeletonKingRightWalk.png",
-        5, 3.0f, 3.0f, 0.6f,
+        1, 3.0f, 3.0f, 0.6f,
         "spells/fireball.png", true,
         48 // 48x48 sprite size
     );
 
     public static EnemyType MEDIUM_BOSS = new EnemyType(
         "SkeletonKingUpWalk.png", "SkeletonKingDownWalk.png", "SkeletonKingLeftWalk.png", "SkeletonKingRightWalk.png",
-        8, 2.0f, 1f, 0.5f,
+        1, 2.0f, 1f, 0.5f,
         "spells/fireball.png", true,
         48 // 48x48 sprite size
     );
 
     public static EnemyType LARGE_BOSS = new EnemyType(
         "SkeletonKingUpWalk.png", "SkeletonKingDownWalk.png", "SkeletonKingLeftWalk.png", "SkeletonKingRightWalk.png",
-        12, 0.6f, 3.5f, 0.45f,
+        1, 0.6f, 3.5f, 0.45f,
         "spells/fireball.png", true,
         48 // 48x48 sprite size
     );
