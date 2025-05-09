@@ -540,7 +540,7 @@ public class GameScreen extends ScreenAdapter {
             }
         }
 
-
+        updateCamera();
 
 
         batch.end();
