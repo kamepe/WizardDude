@@ -16,9 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.wizard.utils.Constants;
 import com.wizard.utils.KeyManager;
 
-/**
- * Represents a door in the game that can be opened and closed by the player.
- */
+
 public class Door {
     private static final float INTERACTION_DISTANCE = 0.3f; // Distance in world units for interaction
 
@@ -37,30 +35,11 @@ public class Door {
     private boolean unlocked;
     private KeyManager keyManager;
 
-    /**
-     * Creates a new door with the specified parameters.
-     *
-     * @param world The Box2D world
-     * @param map The tiled map
-     * @param doorObject The rectangle map object representing the door
-     * @param doorLayerName The name of the door's visual layer
-     * @param doorCollisionLayerName The name of the door's collision layer
-     */
     public Door(World world, TiledMap map, RectangleMapObject doorObject,
                 String doorLayerName, String doorCollisionLayerName) {
         this(world, map, doorObject, doorLayerName, doorCollisionLayerName, null);
     }
 
-    /**
-     * Creates a new door with the specified parameters.
-     *
-     * @param world The Box2D world
-     * @param map The tiled map
-     * @param doorObject The rectangle map object representing the door
-     * @param doorLayerName The name of the door's visual layer
-     * @param doorCollisionLayerName The name of the door's collision layer
-     * @param keyManager The key manager to check for keys and unlocked doors
-     */
     public Door(World world, TiledMap map, RectangleMapObject doorObject,
                 String doorLayerName, String doorCollisionLayerName, KeyManager keyManager) {
         this.world = world;
@@ -94,9 +73,6 @@ public class Door {
         this.unlocked = false;
     }
 
-    /**
-     * Creates the collision body for the door.
-     */
     private void createCollisionBody(Rectangle worldBounds) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -119,11 +95,6 @@ public class Door {
         shape.dispose();
     }
 
-    /**
-     * Updates the door state based on player position and input.
-     *
-     * @param playerPosition The player's current position
-     */
     public void update(Vector2 playerPosition) {
         // Check if player is in range
         float doorCenterX = (bounds.x + bounds.width * 0.5f) / Constants.PPM;
@@ -152,9 +123,7 @@ public class Door {
         }
     }
 
-    /**
-     * Toggles the door between open and closed states.
-     */
+
     private void toggleDoorState() {
         isOpen = !isOpen;
 
@@ -171,45 +140,22 @@ public class Door {
         }
     }
 
-    /**
-     * Checks if the player is in range to interact with the door.
-     *
-     * @return true if player is in range, false otherwise
-     */
     public boolean isPlayerInRange() {
         return playerInRange;
     }
 
-    /**
-     * Checks if the door is currently open.
-     *
-     * @return true if door is open, false if closed
-     */
     public boolean isOpen() {
         return isOpen;
     }
 
-    /**
-     * Checks if the door is locked (requires a key to open).
-     *
-     * @return true if door is locked, false if unlocked
-     */
     public boolean isLocked() {
         return !unlocked && (keyManager == null || !keyManager.isDoorUnlocked(this));
     }
 
-    /**
-     * Sets the key manager for this door.
-     *
-     * @param keyManager The key manager to use
-     */
     public void setKeyManager(KeyManager keyManager) {
         this.keyManager = keyManager;
     }
 
-    /**
-     * Disposes of resources when no longer needed.
-     */
     public void dispose() {
         // Remove body from world when door is no longer needed
         world.destroyBody(collisionBody);
