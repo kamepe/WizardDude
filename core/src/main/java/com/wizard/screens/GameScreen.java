@@ -194,9 +194,9 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void update(float delta){
-        world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
+        world.step(1/60f, 1, 1);
 
-        camera.update(); // these need to be after the world step
+        camera.update();
         player.update(delta);
         entityManager.updateAll(delta);
 
@@ -321,12 +321,6 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
-    /**
-     * Initializes door objects from map layers
-     * @param collisionLayer The layer containing door collision objects
-     * @param visualLayerName The name of the layer containing door visuals
-     * @param collisionLayerName The name of the collision layer
-     */
     private void initializeDoors(MapLayer collisionLayer, String visualLayerName, String collisionLayerName) {
         if (collisionLayer == null) return;
 
@@ -340,9 +334,6 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
-    /**
-     * Updates all doors based on player position
-     */
     private void updateDoors() {
         Vector2 playerPosition = player.getPosition();
         for (Door door : doors) {
