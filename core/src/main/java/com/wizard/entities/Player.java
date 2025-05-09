@@ -67,12 +67,10 @@ public class Player {
         sprite = new Sprite(texture);// need to actually add a texture
         fireballTexture = new Texture(Gdx.files.internal("spells/fireball.png"));
         fireballSprite = new Sprite(fireballTexture);
-        lightningTexture = new Texture(Gdx.files.internal("spells/lightning_spell.png"));
+        lightningTexture = new Texture(Gdx.files.internal("spells/ball.png"));
         lightningSprite = new Sprite(lightningTexture);
         position = new Vector2();
         System.out.println(sprite.getWidth());
-//        width = (sprite.getWidth() / (PPM * 10));//not sure about these lines but pretty sure i can just get rid of them
-//        height = (sprite.getHeight() / (PPM * 10));
         float spriteWpx = sprite.getWidth() / 4;
         float spriteHpx = sprite.getHeight() * 1.5f;
 
@@ -184,12 +182,8 @@ public class Player {
 
             float w = 0.3f, h = 0.3f, speed = 3f;
 
-            // Create a fireball using the Sprite constructor instead of the path string
-            Sprite fireballAnimSprite = new Sprite(fireballTexture);
             entityManager.addToActiveSpells(new Spells(world, startX,
                 startY, aim, w, h, speed, "spells/firebullet.png", this));
-            // spells/firebullet.png
-             // characters/wizard/downn.png
             fireballCooldownTimer = FIREBALL_COOLDOWN;
 
             AudioManager.playPlayerFireballSound();
@@ -210,7 +204,7 @@ public class Player {
 
 
             entityManager.addToActiveSpells(new Spells(world, startX,
-            startY, aim, width, height, speed, lightningSprite, this ));
+            startY, aim, width, height, speed, "spells/ball.png", this ));
             lightningCooldownTimer = LIGHTNING_COOLDOWN;
 
              AudioManager.playPlayerSpellSound();
@@ -287,12 +281,6 @@ public class Player {
     }
     public int getHealth(){ return health;}
 
-    /**
-     * Heals the player by the specified amount.
-     * Health will not exceed the maximum health (10).
-     *
-     * @param amount The amount of health to restore
-     */
     public void heal(int amount) {
         health = Math.min(10, health + amount);
         System.out.println("Player healed / health: " + health);
@@ -317,47 +305,24 @@ public class Player {
 
     public float getCooldownLightning(){return LIGHTNING_COOLDOWN;}
 
-    /**
-     * Checks if the player has any keys.
-     *
-     * @return true if the player has at least one key, false otherwise
-     */
     public boolean hasKey() {
         return keyManager != null && keyManager.hasKey();
     }
 
-    /**
-     * Gets the number of keys the player has.
-     *
-     * @return The number of keys, or 0 if the key manager is not set
-     */
     public int getKeyCount() {
         return keyManager != null ? keyManager.getAvailableKeys() : 0;
     }
 
-    /**
-     * Adds a key to the player's inventory.
-     */
     public void addKey() {
         if (keyManager != null) {
             keyManager.addKey();
         }
     }
 
-    /**
-     * Sets the key manager for this player.
-     *
-     * @param keyManager The key manager to use
-     */
     public void setKeyManager(KeyManager keyManager) {
         this.keyManager = keyManager;
     }
 
-    /**
-     * Gets the key manager for this player.
-     *
-     * @return The key manager, or null if not set
-     */
     public KeyManager getKeyManager() {
         return keyManager;
     }

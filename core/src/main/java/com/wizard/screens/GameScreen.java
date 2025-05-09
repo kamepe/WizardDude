@@ -198,6 +198,9 @@ public class GameScreen extends ScreenAdapter {
 
     public void update(float delta){
         world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
+        world.step(1/60f, 1, 1);
+
+        camera.update();
         player.update(delta);
         entityManager.updateAll(delta);
 
@@ -321,7 +324,6 @@ public class GameScreen extends ScreenAdapter {
             }
         }
     }
-
 
     private void initializeDoors(MapLayer collisionLayer, String visualLayerName, String collisionLayerName) {
         if (collisionLayer == null) return;
@@ -494,7 +496,7 @@ public class GameScreen extends ScreenAdapter {
         shapes.rect(10, screenHeight-60, 100 * lightFrac, 8);
 
         shapes.end();
-        // Render the health bar and adjust size
+        // Render the helth bar and adjust size
         batch.setProjectionMatrix(uiProj);
         batch.begin();
         int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);

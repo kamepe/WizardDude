@@ -35,10 +35,18 @@ public class Animator {
         if (path.contains("firebullet")) {
             TextureRegion fullTexture = new TextureRegion(texture);
             fullTexture.setRegion(0, 17, 80, 16);
-            frames = new TextureRegion[5]; // 80/16 = 5 frames
+            frames = new TextureRegion[5];
             for (int i = 0; i < 5; i++) {
                 frames[i] = new TextureRegion(fullTexture, i * 16, 0, 16, 16);
             }
+        } else if (path.contains("ball")) {
+            TextureRegion fullTexture = new TextureRegion(texture);
+            fullTexture.setRegion(16, 16, 192, 64);
+            frames = new TextureRegion[1];
+            for (int i = 0; i < 1; i++) {
+                frames[i] = new TextureRegion(fullTexture, i * 64, 0, 64, 64);
+            }
+            System.out.println("heeeeeelllllllllllp");
         } else {
             // Default animation handling for player
             frames = TextureRegion.split(texture, 32, 32)[0];
@@ -74,6 +82,11 @@ public class Animator {
             // For projectiles, we use the body position directly
             float centerX = body.getPosition().x * Constants.PPM;
             float centerY = body.getPosition().y * Constants.PPM;
+
+            if (frameWpx == 64 && frameHpx == 64) {
+                frameWpx /= 2;
+                frameHpx /= 2;
+            }
 
             // Draw bottom-left such that the frame is centered
             batch.draw(frame,
