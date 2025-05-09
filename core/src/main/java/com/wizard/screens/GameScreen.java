@@ -84,8 +84,8 @@ public class GameScreen extends ScreenAdapter {
     private boolean mediumBossSpawned = false;
     private boolean largeBossSpawned = false;
     private Rectangle playerSpawnArea; // New field for player's spawn area
-    private static final float VIRTUAL_WIDTH  = 400f;
-    private static final float VIRTUAL_HEIGHT = 200f;
+    private static final float VIRTUAL_WIDTH  = 520f;
+    private static final float VIRTUAL_HEIGHT = 260f;
     // Removed duplicate declaration of viewport
 
     private ShaderProgram vignetteShader;
