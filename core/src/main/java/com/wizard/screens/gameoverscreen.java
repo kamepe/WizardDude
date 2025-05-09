@@ -28,7 +28,7 @@ public class gameoverscreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                if (alpha >= 1f) { // only accept input after fade in completes
+                if (alpha >= 1f) { 
                     if (keycode == Input.Keys.R) {
                         AudioManager.playButtonClickSound();
                         ScreenManager.showGame();
@@ -45,7 +45,7 @@ public class gameoverscreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        // increment alpha until fully opaque
+        
         if (alpha < 1f) {
             alpha = Math.min(1f, alpha + delta / FADE_DURATION);
         }
