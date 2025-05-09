@@ -480,24 +480,33 @@ public class GameScreen extends ScreenAdapter {
         // Debug hitboxes are now hidden
         // debugRenderer.render(world, camera.combined.scl(Constants.PPM));
         // Render cooldown bars
+        batch.setShader(null);
+
+        int sw = Gdx.graphics.getWidth();
+        int sh = Gdx.graphics.getHeight();
+        Gdx.gl.glViewport(0, 0, sw, sh);
+
+        uiProj.setToOrtho2D(0, 0, sw, sh);
         shapes.setProjectionMatrix(uiProj);
+
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        // Fire bar
+        
+        // Fire cooldown
         shapes.setColor(Color.DARK_GRAY);
-        shapes.rect(10, Gdx.graphics.getHeight() - 40, 100, 8);
-        float fireFrac = 1 - (player.getCooldownFireTimer() / player.getCooldownFire());
+        shapes.rect(10, sh - 40, 100, 8);
+        float fireFrac = 1f - (player.getCooldownFireTimer() / player.getCooldownFire());
         shapes.setColor(Color.ORANGE);
-        shapes.rect(10, screenHeight-40, 100 * fireFrac, 8);
+        shapes.rect(10, sh - 40, 100 * fireFrac, 8);
 
-        // Lightning bar
+        // Lightning cooldown
         shapes.setColor(Color.DARK_GRAY);
-        shapes.rect(10, screenHeight-60, 100, 8);
-        float lightFrac = 1 - (player.getCooldownLightningTimer() / player.getCooldownLightning());
+        shapes.rect(10, sh - 60, 100, 8);
+        float lightFrac = 1f - (player.getCooldownLightningTimer() / player.getCooldownLightning());
         shapes.setColor(Color.CYAN);
-        shapes.rect(10, screenHeight-60, 100 * lightFrac, 8);
-
+        shapes.rect(10, sh - 60, 100 * lightFrac, 8);
         shapes.end();
         // Render the helth bar and adjust size
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.setProjectionMatrix(uiProj);
         batch.begin();
         int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);
