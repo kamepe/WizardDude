@@ -32,6 +32,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Boss;
@@ -83,6 +84,9 @@ public class GameScreen extends ScreenAdapter {
     private boolean mediumBossSpawned = false;
     private boolean largeBossSpawned = false;
     private Rectangle playerSpawnArea; // New field for player's spawn area
+    private static final float VIRTUAL_WIDTH  = 400f;
+    private static final float VIRTUAL_HEIGHT = 200f; 
+    // Removed duplicate declaration of viewport
 
     private ShaderProgram vignetteShader;
 
@@ -160,8 +164,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
-        this.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.camera.zoom = 0.5f;
+        viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 
         float PLAYER_SPAWN_X = 6.75f;
         float PLAYER_SPAWN_Y = 2.27f;
@@ -195,8 +198,6 @@ public class GameScreen extends ScreenAdapter {
 
     public void update(float delta){
         world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
-
-        camera.update(); // these need to be after the world step
         player.update(delta);
         entityManager.updateAll(delta);
 
@@ -433,13 +434,12 @@ public class GameScreen extends ScreenAdapter {
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
         update(delta);
-
+        viewport.apply(true);
+        updateCamera();
         // Clear screen
         Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update camera
-        updateCamera();
 
         // calculate players position in screen coordinates
         Vector3 playerScreenPos = new Vector3(player.getX() * Constants.PPM, player.getY() * Constants.PPM, 0);
@@ -467,11 +467,11 @@ public class GameScreen extends ScreenAdapter {
         // Apply shader to the tiled map renderer
         renderer.getBatch().setShader(vignetteShader);
 
-        renderer.setView(camera);
+        renderer.setView((OrthographicCamera)viewport.getCamera());
         renderer.render();
 
         // Render player
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
         player.render(batch);
         entityManager.renderAll();
@@ -549,10 +549,10 @@ public class GameScreen extends ScreenAdapter {
     public TiledMap getMap(){
         return tiledMap;
     }
-
+    @Override
     public void resize(int width, int height){
-        camera.viewportWidth  = width;
-        camera.viewportHeight = height;
+
+        viewport.update(width, height, true);
         camera.update();
 
         // UI projection
