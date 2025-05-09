@@ -497,7 +497,7 @@ public class GameScreen extends ScreenAdapter {
         shapes.rect(10, screenHeight-60, 100 * lightFrac, 8);
 
         shapes.end();
-        // Render the helth bar and adjust size
+        // Render the health bar and adjust size
         batch.setProjectionMatrix(uiProj);
         batch.begin();
         int hp = MathUtils.clamp(player.getHealth(), 0, MAX_HEALTH);
@@ -510,7 +510,7 @@ public class GameScreen extends ScreenAdapter {
         bar.draw(batch);
 
         // Draw key UI
-        keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 40, 30, 30);
+        keyManager.render(batch, 10, Gdx.graphics.getHeight() - desiredHeight - 75, 30, 30);
 
 
         // Draw door interaction prompt if player is near a door
