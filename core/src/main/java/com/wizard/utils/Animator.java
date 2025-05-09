@@ -46,7 +46,6 @@ public class Animator {
             for (int i = 0; i < 1; i++) {
                 frames[i] = new TextureRegion(fullTexture, i * 64, 0, 64, 64);
             }
-            System.out.println("heeeeeelllllllllllp");
         } else {
             // Default animation handling for player
             frames = TextureRegion.split(texture, 32, 32)[0];
