@@ -15,8 +15,8 @@ public class diedscreen extends ScreenAdapter {
     private final SpriteBatch batch;
     private final OrthographicCamera cam;
     private final Texture background;
-    private float alpha = 0f;               // current opacity
-    private static final float FADE_DURATION = 2f; // seconds to fully fade in
+    private float alpha = 0f;             
+    private static final float FADE_DURATION = 2f; 
 
     public diedscreen(Main game) {
         AudioManager.initSoundEffects();
@@ -28,7 +28,7 @@ public class diedscreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                if (alpha >= 1f) { // only accept input after fade in completes
+                if (alpha >= 1f) { 
                     if (keycode == Input.Keys.R) {
                         AudioManager.playButtonClickSound();
                         ScreenManager.showGame();
@@ -45,7 +45,7 @@ public class diedscreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        // increment alpha until fully opaque
+      
         if (alpha < 1f) {
             alpha = Math.min(1f, alpha + delta / FADE_DURATION);
         }
@@ -57,7 +57,7 @@ public class diedscreen extends ScreenAdapter {
         batch.begin();
         batch.setColor(1f, 1f, 1f, alpha);
         batch.draw(background, 0, 0, cam.viewportWidth, cam.viewportHeight);
-        batch.setColor(1f, 1f, 1f, 1f); // reset to full opacity
+        batch.setColor(1f, 1f, 1f, 1f); 
         batch.end();
     }
 
