@@ -197,8 +197,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void update(float delta){
-        world.step(1/60f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
-        world.step(1/60f, 1, 1);
+        world.step(1/100f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
+        world.step(1/100f, 1, 1);
 
         camera.update();
         player.update(delta);
