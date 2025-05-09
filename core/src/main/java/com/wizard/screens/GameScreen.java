@@ -1,6 +1,7 @@
 package com.wizard.screens;
 
 import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -196,7 +197,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void update(float delta){
-        world.step(1/30f, 1, 1);
+        world.step(1/100f, 1, 1);  //CHECK this shit before implementing not sure about the velocity but prolly gonna use 30 frames
+        world.step(1/100f, 1, 1);
 
         camera.update();
         player.update(delta);
@@ -536,6 +538,9 @@ public class GameScreen extends ScreenAdapter {
                 font.draw(batch, promptText, screenWidth / 2 - 150, 50);
             }
         }
+
+
+
 
         batch.end();
     }
