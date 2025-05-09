@@ -477,7 +477,8 @@ public class GameScreen extends ScreenAdapter {
         batch.end();
 
         batch.setShader(null);
-        debugRenderer.render(world, camera.combined.scl(Constants.PPM));
+        // Debug hitboxes are now hidden
+        // debugRenderer.render(world, camera.combined.scl(Constants.PPM));
         // Render cooldown bars
         shapes.setProjectionMatrix(uiProj);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
