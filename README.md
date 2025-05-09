@@ -1,4 +1,4 @@
-# WizardDude 
+# ALCHEMIST 
 This is a top down action-adventure game, where the player is a wizzard who is stuck in a dungeon and is attempting to slay the enmies and escape the dungeon.
 
 # Starting the project
