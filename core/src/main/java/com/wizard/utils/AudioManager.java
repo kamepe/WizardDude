@@ -109,9 +109,6 @@ public class AudioManager {
             speaksound = Gdx.audio.newSound(Gdx.files.internal("audio/speaksound.mp3"));
         }
 
-        if (bossShootSound == null) {
-            bossShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_shoot.wav"));
-        }
 
         if (bossSpellCastSound == null) {
             bossSpellCastSound = Gdx.audio.newSound(Gdx.files.internal("audio/boss_spell_cast.mp3"));
