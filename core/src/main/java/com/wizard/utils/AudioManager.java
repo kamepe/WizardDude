@@ -94,9 +94,6 @@ public class AudioManager {
         }
 
         // Initialize enemy sounds
-        if (enemyShootSound == null) {
-            enemyShootSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_shoot.wav"));
-        }
 
         if (enemyMeleeAttackSound == null) {
             enemyMeleeAttackSound = Gdx.audio.newSound(Gdx.files.internal("audio/enemy_mele_attack.mp3"));
