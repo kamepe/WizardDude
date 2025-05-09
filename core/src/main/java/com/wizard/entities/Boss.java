@@ -11,11 +11,14 @@ import com.wizard.utils.AudioManager;
 import com.wizard.utils.KeyManager;
 
 public class Boss extends Enemy {
+    
+    private static int bossKillCount = 0;
+    private static final int TOTAL_BOSSES = 3;
+    
     private final Sprite fireballSprite;
     private final Sprite lightningSprite;
     private final Sprite icegSprite;
     private World world;
-    private int bosskilled = 0;
 
     public Boss(World world, float x, float y,
                 EntityManager em, Player player,
@@ -51,7 +54,7 @@ public class Boss extends Enemy {
         AudioManager.playBossSpellCastSound();
     }
 
-    // five‐shot cone fire
+    
     private void attackSpray(Vector2 dir) {
         float base = dir.angleDeg();
         for (int i = -2; i <= 2; i++) {
@@ -59,24 +62,26 @@ public class Boss extends Enemy {
             spawnSpellFire(d);
         }
     }
-    // attack in a circle ice
+    
+   
     private void attackCircle(Vector2 dir) {
         for (int i = 0; i < 360; i += 3) {
             Vector2 d = new Vector2(1, 0).setAngleDeg(i * 10);
             spawnSpellIce(d);
         }
     }
-    // rapid fire lightning
+    
+   
     private void attackRapid(Vector2 dir) {
         float interval = 0.1f;
         for (int i = 0; i < 10; i++) {
            final Vector2 d = new Vector2(dir);
            Timer.schedule(new Timer.Task(){
-        @Override
-        public void run() {
-            spawnSpellLightning(d);
-            }
-        }, i * interval);
+                @Override
+                public void run() {
+                    spawnSpellLightning(d);
+                }
+            }, i * interval);
         }
     }
 
@@ -93,6 +98,7 @@ public class Boss extends Enemy {
             this
         ));
     }
+    
     private void spawnSpellLightning(Vector2 dir) {
          getEntityManager().addToActiveSpells(new Spells(
             getWorld(),
@@ -106,7 +112,8 @@ public class Boss extends Enemy {
             this
         ));
     }
-     private void spawnSpellIce(Vector2 dir) {
+    
+    private void spawnSpellIce(Vector2 dir) {
          getEntityManager().addToActiveSpells(new Spells(
             getWorld(),
             getBody().getPosition().x,
@@ -119,22 +126,36 @@ public class Boss extends Enemy {
             this
         ));
     }
-    // death
-
+    
+    
+    @Override
     public void onDeath() {
+        super.onDeath();
 
-        // Give the player a key and heal them more when the boss is killed
+       
         Player player = getEntityManager().getPlayer();
         if (player != null) {
             player.addKey();
-            player.heal(3); // Bosses restore 3 health (more than regular enemies)
-            bosskilled += 1;
-            System.out.println("Boss killed! Player received a key and healed 3 health.");
-            System.out.println("Boss killed:" + bosskilled);
-            if (bosskilled >= 3) {
-                ScreenManager.showGameOver();
-                System.out.println("Boss killed:" + bosskilled);
+            
+            
+            bossKillCount++;
+            
+            
+           
+            if (bossKillCount >= TOTAL_BOSSES) {
+                
+                
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        ScreenManager.showGameOver();
+                    }
+                }, 1.5f); 
             }
         }
+    }
+    
+    public static void resetBossKillCount() {
+        bossKillCount = 0;
     }
 }

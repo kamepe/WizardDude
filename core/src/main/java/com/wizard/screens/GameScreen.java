@@ -192,7 +192,7 @@ public class GameScreen extends ScreenAdapter {
             0
         );
         camera.update();
-
+        Boss.resetBossKillCount();
         initializeRooms();
     }
 
