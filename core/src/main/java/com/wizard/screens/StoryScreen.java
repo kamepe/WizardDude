@@ -41,18 +41,19 @@ public class StoryScreen extends ScreenAdapter {
             new Texture(Gdx.files.internal("storyline/story4.png")),
             new Texture(Gdx.files.internal("storyline/story5.png")),
             new Texture(Gdx.files.internal("storyline/story6.png")),
-            new Texture(Gdx.files.internal("storyline/Controls.png"))
+            new Texture(Gdx.files.internal("storyline/Controls.png")),
+            new Texture(Gdx.files.internal("storyline/task.png"))
         };
 
         // Story texts
         texts = new String[]{
-            "balahahahahahahaha",
-            "blahahahahahahaha",
-            "blahahahahahahaha",
-            "blahahahahahaahhahaha",
-            "blahahahahahahahahahahahahahahahahahahahahaha",
-            "spawneennenenene where aim I???S?S?S?S?",
-            "..."
+            "Harry: Ron why have you turned to such forbidden sorcery?",
+            "Ron: Forbidden? You lack the vision to wield power like mine!",
+            "Harry: This darkness will consume you stop! now before its too late!",
+            "Ron: Too late! (blazeeeee)",
+            "CRASH!",
+            "Where am I? I must escape and end this nightmare",
+            " ", " "
         };
 
         // Setup fonts
