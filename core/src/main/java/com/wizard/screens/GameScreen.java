@@ -32,7 +32,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.wizard.Main;
 import com.wizard.entities.Boss;
@@ -164,7 +164,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         this.camera = new OrthographicCamera(); // Still need to fix it so its not a bugged and dumb
-        viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+        viewport = new FillViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 
         float PLAYER_SPAWN_X = 6.75f;
         float PLAYER_SPAWN_Y = 2.27f;
